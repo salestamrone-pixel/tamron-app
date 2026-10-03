@@ -38,7 +38,6 @@ export default function RegisterScreen() {
 
       await updateProfile(userCredential.user, {
         displayName: name,
-        phoneNumber: phone,
       });
 
       router.replace('/(home)');
