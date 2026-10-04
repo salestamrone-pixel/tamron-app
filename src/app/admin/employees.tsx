@@ -69,7 +69,7 @@ function Employees() {
           <Card key={member.email}>
             <Badge
               label={!member.active ? 'موقوف' : member.role === 'admin' ? 'مدير' : 'موظف'}
-              color={!member.active ? palette.muted : member.role === 'admin' ? palette.accent : palette.primary}
+              color={!member.active ? palette.muted : member.role === 'admin' ? palette.gold : palette.gold}
             />
             <Title>{member.name}</Title>
             <P>{member.email}</P>

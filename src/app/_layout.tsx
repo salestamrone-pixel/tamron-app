@@ -1,24 +1,38 @@
+import {
+  Tajawal_400Regular,
+  Tajawal_500Medium,
+  Tajawal_700Bold,
+  Tajawal_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/tajawal';
 import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import { palette } from '@/components/kit';
+import { headerOptions } from '@/components/kit';
 import { AuthProvider } from '@/context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    Tajawal_400Regular,
+    Tajawal_500Medium,
+    Tajawal_700Bold,
+    Tajawal_800ExtraBold,
+  });
+  const ready = fontsLoaded || fontError !== null;
+
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) return null;
+
   return (
     <AuthProvider>
       <ThemeProvider value={DefaultTheme}>
-        <AnimatedSplashOverlay />
-        <Stack
-          screenOptions={{
-            headerStyle: { backgroundColor: palette.primary },
-            headerTintColor: '#fff',
-            headerTitleAlign: 'center',
-            headerBackTitle: 'رجوع',
-          }}>
+        <Stack screenOptions={{ ...headerOptions, headerBackTitle: 'رجوع' }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>

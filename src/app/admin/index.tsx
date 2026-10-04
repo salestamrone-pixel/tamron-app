@@ -1,6 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
 
-import { Card, Muted, Screen, Title } from '@/components/kit';
+import { Hero, ListItem, palette, Screen } from '@/components/kit';
 import { StaffGate } from '@/components/staff-gate';
 
 export default function AdminHome() {
@@ -10,22 +10,11 @@ export default function AdminHome() {
       <Stack.Screen options={{ title: 'لوحة الإدارة' }} />
       <StaffGate adminOnly>
         <Screen>
-          <Card onPress={() => router.push('/admin/requests')}>
-            <Title>طلبات العملاء</Title>
-            <Muted>مراجعة المواصفات والرد بعرض السعر.</Muted>
-          </Card>
-          <Card onPress={() => router.push('/admin/attendance')}>
-            <Title>الحضور والانصراف</Title>
-            <Muted>حضور اليوم وآخر موقع مسجل لكل موظف.</Muted>
-          </Card>
-          <Card onPress={() => router.push('/admin/employees')}>
-            <Title>الموظفون</Title>
-            <Muted>إضافة الموظفين ببريدهم وتحديد صلاحياتهم.</Muted>
-          </Card>
-          <Card onPress={() => router.push('/admin/sites')}>
-            <Title>مواقع العمل</Title>
-            <Muted>تحديد المواقع التي يُسمح بتسجيل الحضور منها.</Muted>
-          </Card>
+          <Hero icon="shield-crown-outline" title="لوحة الإدارة" subtitle="كل ما يخص الطلبات والموظفين في مكان واحد." />
+          <ListItem icon="clipboard-text-outline" title="طلبات العملاء" subtitle="مراجعة المواصفات والرد بعرض السعر" onPress={() => router.push('/admin/requests')} />
+          <ListItem icon="calendar-check-outline" title="الحضور والانصراف" subtitle="حضور اليوم وآخر موقع مسجل لكل موظف" onPress={() => router.push('/admin/attendance')} />
+          <ListItem icon="account-group-outline" title="الموظفون" subtitle="إضافة الموظفين ببريدهم وتحديد صلاحياتهم" onPress={() => router.push('/admin/employees')} />
+          <ListItem icon="map-marker-radius-outline" title="مواقع العمل" subtitle="المواقع التي يُسمح بتسجيل الحضور منها" onPress={() => router.push('/admin/sites')} />
         </Screen>
       </StaffGate>
     </>

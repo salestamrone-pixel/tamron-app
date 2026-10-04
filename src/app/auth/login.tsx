@@ -3,6 +3,7 @@ import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/aut
 import { useState } from 'react';
 
 import { Button, Dialog, ErrorText, Field, H1, Muted, Screen } from '@/components/kit';
+import { GoogleButton } from '@/components/google-button';
 import { auth } from '@/config/firebase';
 
 export default function LoginScreen() {
@@ -50,14 +51,15 @@ export default function LoginScreen() {
       <Stack.Screen options={{ title: 'تسجيل الدخول' }} />
       <H1>مرحباً بك</H1>
       <Muted>سجّل الدخول إلى حسابك.</Muted>
+      <GoogleButton />
       <ErrorText>{error}</ErrorText>
       <Field label="البريد الإلكتروني" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" style={{ textAlign: 'left' }} />
       <Field label="كلمة المرور" value={password} onChangeText={setPassword} secureTextEntry style={{ textAlign: 'left' }} />
-      <Button label="تسجيل الدخول" onPress={login} loading={loading} />
+      <Button label="تسجيل الدخول" icon="login" onPress={login} loading={loading} />
       <Button label="إنشاء حساب جديد" variant="outline" onPress={() => router.replace('/auth/register')} />
       <Button label="نسيت كلمة المرور؟" variant="outline" onPress={reset} />
 
-      <Dialog visible={resetSent} title="تحقق من بريدك" message="إذا كان البريد مسجلاً لدينا فستصلك رسالة لإعادة تعيين كلمة المرور." onClose={() => setResetSent(false)}>
+      <Dialog visible={resetSent} icon="email-check-outline" title="تحقق من بريدك" message="إذا كان البريد مسجلاً لدينا فستصلك رسالة لإعادة تعيين كلمة المرور." onClose={() => setResetSent(false)}>
         <Button label="حسناً" onPress={() => setResetSent(false)} />
       </Dialog>
     </Screen>

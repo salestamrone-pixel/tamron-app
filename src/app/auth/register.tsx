@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } 
 import { useState } from 'react';
 
 import { Button, ErrorText, Field, H1, Muted, Screen } from '@/components/kit';
+import { GoogleButton } from '@/components/google-button';
 import { auth } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 
@@ -56,6 +57,7 @@ export default function RegisterScreen() {
       <Stack.Screen options={{ title: 'إنشاء حساب' }} />
       <H1>حساب جديد</H1>
       <Muted>موظفو الشركة: سجّلوا بنفس البريد الذي أضافته الإدارة.</Muted>
+      <GoogleButton />
       <ErrorText>{error}</ErrorText>
       <Field label="الاسم الكامل" value={name} onChangeText={setName} />
       <Field label="البريد الإلكتروني" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" style={{ textAlign: 'left' }} />

@@ -2,7 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useState } from 'react';
 
-import { Button, Card, Dialog, Empty, ErrorText, Field, Muted, Screen, Title } from '@/components/kit';
+import { Button, Dialog, Empty, ErrorText, Field, ListItem, palette, Screen } from '@/components/kit';
 import { db } from '@/config/firebase';
 import { SERVICES } from '@/constants/services';
 import { useAuth } from '@/context/AuthContext';
@@ -28,7 +28,7 @@ export default function RequestScreen() {
     return (
       <>
         {header}
-        <Empty title="سجّل الدخول أولاً" message="تحتاج حساباً لإرسال الطلب ومتابعة رد الشركة.">
+        <Empty icon="account-lock-outline" title="سجّل الدخول أولاً" message="تحتاج حساباً لإرسال الطلب ومتابعة رد الشركة.">
           <Button label="تسجيل الدخول" onPress={() => router.push('/auth/login')} />
         </Empty>
       </>
@@ -77,10 +77,7 @@ export default function RequestScreen() {
   return (
     <Screen>
       {header}
-      <Card>
-        <Title>{service.name}</Title>
-        <Muted>{service.description}</Muted>
-      </Card>
+      <ListItem icon={service.icon} title={service.name} subtitle={service.description} />
 
       <ErrorText>{error}</ErrorText>
 
@@ -90,9 +87,9 @@ export default function RequestScreen() {
       <Field label="المدينة / موقع التركيب" value={location} onChangeText={setLocation} />
       <Field label="رقم الجوال للتواصل *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
-      <Button label="إرسال الطلب" onPress={submit} loading={sending} />
+      <Button label="إرسال الطلب" icon="send" onPress={submit} loading={sending} />
 
-      <Dialog visible={sent} title="تم إرسال طلبك" message="سنراجع المواصفات ونرد عليك بعرض السعر. تابع الرد من صفحة «طلباتي»." onClose={finish}>
+      <Dialog visible={sent} icon="check-circle-outline" tone={palette.success} title="تم إرسال طلبك" message="سنراجع المواصفات ونرد عليك بعرض السعر. تابع الرد من صفحة «طلباتي»." onClose={finish}>
         <Button label="عرض طلباتي" onPress={finish} />
       </Dialog>
     </Screen>
