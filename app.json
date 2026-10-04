@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "تامرون",
-    "slug": "tamron-app",
+    "slug": "tamrone-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,7 +16,14 @@
         "backgroundImage": "./assets/images/android-icon-background.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.tamrone.app"
+      "package": "com.tamrone.app",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
+      ]
     },
     "web": {
       "output": "static",
@@ -50,6 +57,13 @@
     "ios": {
       "bundleIdentifier": "com.tamrone.app",
       "supportsTablet": false
+    },
+    "owner": "tamrone-arabia-ltd",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "08873681-277a-40ec-90b5-9f9443ffbaea"
+      }
     }
   }
 }
