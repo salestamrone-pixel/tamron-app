@@ -89,7 +89,7 @@ function Attendance() {
                 <Muted>آخر موقع مسجل: {formatDate(last.updatedAt, true)}</Muted>
                 <Row>
                   <Button label="آخر موقع على الخريطة" variant="outline" icon="map-outline" onPress={() => Linking.openURL(mapsUrl(last))} />
-                  <Button label="سجل التحركات" variant="dark" icon="map-marker-path" onPress={() => router.push({ pathname: '/admin/track', params: { email: member.email, name: member.name } })} />
+                  <Button label="سجل التحركات" variant="dark" icon="footsteps-outline" onPress={() => router.push({ pathname: '/admin/track', params: { email: member.email, name: member.name } })} />
                 </Row>
               </>
             ) : (

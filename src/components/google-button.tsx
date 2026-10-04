@@ -35,7 +35,7 @@ export function GoogleButton() {
   return (
     <>
       <ErrorText>{error}</ErrorText>
-      <Button label="المتابعة بحساب Google" icon="google" variant="outline" onPress={go} loading={loading} />
+      <Button label="المتابعة بحساب Google" icon="logo-google" variant="outline" onPress={go} loading={loading} />
       <View style={styles.divider}>
         <View style={styles.line} />
         <Text style={styles.or}>أو بالبريد الإلكتروني</Text>

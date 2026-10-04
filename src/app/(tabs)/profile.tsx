@@ -20,7 +20,7 @@ export default function ProfileScreen() {
 
   if (!user) {
     return (
-      <Empty icon="account-circle-outline" title="حسابي" message="سجّل الدخول أو أنشئ حساباً جديداً.">
+      <Empty icon="person-circle-outline" title="حسابي" message="سجّل الدخول أو أنشئ حساباً جديداً.">
         <Button label="تسجيل الدخول" onPress={() => router.push('/auth/login')} />
         <Button label="إنشاء حساب" variant="outline" onPress={() => router.push('/auth/register')} />
       </Empty>
@@ -60,18 +60,18 @@ export default function ProfileScreen() {
       </Card>
 
       {isStaff ? (
-        <ListItem icon="map-marker-check-outline" title="بوابة الموظفين" subtitle="الحضور والانصراف" onPress={() => router.push('/staff')} />
+        <ListItem icon="location-outline" title="بوابة الموظفين" subtitle="الحضور والانصراف" onPress={() => router.push('/staff')} />
       ) : null}
       {isAdmin ? (
-        <ListItem icon="shield-crown-outline" title="لوحة الإدارة" subtitle="إدارة الطلبات والموظفين" onPress={() => router.push('/admin')} />
+        <ListItem icon="shield-checkmark-outline" title="لوحة الإدارة" subtitle="إدارة الطلبات والموظفين" onPress={() => router.push('/admin')} />
       ) : null}
 
-      <Button label="تسجيل الخروج" icon="logout" variant="outline" onPress={logout} />
+      <Button label="تسجيل الخروج" icon="log-out-outline" variant="outline" onPress={logout} />
       <Button label="حذف الحساب" variant="danger" onPress={() => setConfirmDelete(true)} />
 
       <Dialog
         visible={confirmDelete}
-        icon="alert-outline"
+        icon="warning-outline"
         tone={palette.danger}
         title="حذف الحساب نهائياً"
         message={usesPassword ? 'سيتم حذف حسابك وجميع طلباتك ولا يمكن التراجع. أدخل كلمة المرور للتأكيد.' : 'سيتم حذف حسابك وجميع طلباتك ولا يمكن التراجع. سنطلب تأكيد هويتك بحساب Google.'}

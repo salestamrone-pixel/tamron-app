@@ -7,6 +7,7 @@ import {
 } from '@expo-google-fonts/tajawal';
 import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { I18nManager } from 'react-native';
 
@@ -37,6 +38,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider value={DefaultTheme}>
+        <StatusBar style="dark" />
         <Stack screenOptions={{ ...headerOptions, headerBackTitle: 'رجوع' }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>

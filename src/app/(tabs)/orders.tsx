@@ -34,7 +34,7 @@ export default function OrdersScreen() {
 
   if (!user) {
     return (
-      <Empty icon="clipboard-text-outline" title="طلباتي" message="سجّل الدخول لعرض طلباتك وردود الشركة عليها.">
+      <Empty icon="document-text-outline" title="طلباتي" message="سجّل الدخول لعرض طلباتك وردود الشركة عليها.">
         <Button label="تسجيل الدخول" onPress={() => router.push('/auth/login')} />
       </Empty>
     );
@@ -44,7 +44,7 @@ export default function OrdersScreen() {
 
   if (quotes.length === 0) {
     return (
-      <Empty icon="clipboard-plus-outline" title="لا توجد طلبات بعد" message="أرسل أول طلب عرض سعر من قائمة الخدمات.">
+      <Empty icon="add-circle-outline" title="لا توجد طلبات بعد" message="أرسل أول طلب عرض سعر من قائمة الخدمات.">
         <Button label="استعرض الخدمات" onPress={() => router.push('/services')} />
       </Empty>
     );

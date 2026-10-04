@@ -67,10 +67,10 @@ export function TrackingCard({ staff }: { staff: StaffMember }) {
       {on ? (
         <Button label="إيقاف التتبع" variant="outline" onPress={stop} loading={busy} />
       ) : (
-        <Button label="تفعيل التتبع" icon="map-marker-radius-outline" onPress={() => setAsking(true)} />
+        <Button label="تفعيل التتبع" icon="navigate-circle-outline" onPress={() => setAsking(true)} />
       )}
 
-      <Dialog visible={asking} icon="map-marker-alert-outline" title="موافقة على تتبع الموقع" onClose={() => setAsking(false)}>
+      <Dialog visible={asking} icon="locate-outline" title="موافقة على تتبع الموقع" onClose={() => setAsking(false)}>
         <P>
           يجمع تطبيق تامرون بيانات موقعك الجغرافي لتسجيل الحضور والانصراف تلقائياً ولتمكين إدارة الشركة من معرفة
           موقعك، وذلك طوال الوقت: أثناء الدوام وخارجه، وحتى عند إغلاق التطبيق أو عدم استخدامه.

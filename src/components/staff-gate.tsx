@@ -16,7 +16,7 @@ export function StaffGate({ adminOnly = false, children }: { adminOnly?: boolean
 
   if (!user) {
     return (
-      <Empty icon="account-lock-outline" title="خاص بموظفي الشركة" message="سجّل الدخول بحساب الموظف.">
+      <Empty icon="lock-closed-outline" title="خاص بموظفي الشركة" message="سجّل الدخول بحساب الموظف.">
         <Button label="تسجيل الدخول" onPress={() => router.push('/auth/login')} />
       </Empty>
     );
@@ -42,7 +42,7 @@ export function StaffGate({ adminOnly = false, children }: { adminOnly?: boolean
       setNote('لم يتم تفعيل البريد بعد.');
     };
     return (
-      <Empty icon="email-alert-outline" title="فعّل بريدك الإلكتروني" message={`أرسلنا رابط تفعيل إلى ${user.email}. بعد الضغط عليه ارجع واضغط «تم التفعيل».`}>
+      <Empty icon="mail-unread-outline" title="فعّل بريدك الإلكتروني" message={`أرسلنا رابط تفعيل إلى ${user.email}. بعد الضغط عليه ارجع واضغط «تم التفعيل».`}>
         {note ? <Muted>{note}</Muted> : null}
         <Button label="تم التفعيل" onPress={check} loading={busy} />
         <Button label="إعادة إرسال الرابط" variant="outline" onPress={resend} disabled={busy} />
@@ -53,7 +53,7 @@ export function StaffGate({ adminOnly = false, children }: { adminOnly?: boolean
   if (!isStaff || (adminOnly && !isAdmin)) {
     return (
       <Empty
-        icon="shield-lock-outline"
+        icon="shield-outline"
         title="غير مصرح"
         message={adminOnly ? 'هذه الصفحة لإدارة الشركة فقط.' : 'هذا القسم لموظفي الشركة فقط. إذا كنت موظفاً فاطلب من الإدارة إضافة بريدك.'}
       />

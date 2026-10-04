@@ -19,16 +19,16 @@ export default function HomeScreen() {
           title={firstName ? `أهلاً ${firstName}` : 'تامرون العربية'}
           subtitle="دعاية وإعلان · لوحات وواجهات · ليزر و CNC. اكتب مواصفات طلبك ونرد عليك بعرض السعر.">
           <View style={{ alignSelf: 'stretch', marginTop: 8 }}>
-            <Button label="اطلب عرض سعر" icon="arrow-left" onPress={() => router.push('/services')} />
+            <Button label="اطلب عرض سعر" icon="arrow-back" variant="gold" onPress={() => router.push('/services')} />
           </View>
         </Hero>
 
         {isStaff || isAdmin ? <Section>فريق العمل</Section> : null}
         {isStaff ? (
-          <ListItem icon="map-marker-check-outline" title="بوابة الموظفين" subtitle="الحضور والانصراف وسجل الدوام" onPress={() => router.push('/staff')} />
+          <ListItem icon="location-outline" title="بوابة الموظفين" subtitle="الحضور والانصراف وسجل الدوام" onPress={() => router.push('/staff')} />
         ) : null}
         {isAdmin ? (
-          <ListItem icon="shield-crown-outline" title="لوحة الإدارة" subtitle="الطلبات، الموظفون، المواقع، الحضور" onPress={() => router.push('/admin')} />
+          <ListItem icon="shield-checkmark-outline" title="لوحة الإدارة" subtitle="الطلبات، الموظفون، المواقع، الحضور" onPress={() => router.push('/admin')} />
         ) : null}
 
         <Section>خدماتنا</Section>
@@ -37,12 +37,12 @@ export default function HomeScreen() {
             <Tile key={s.id} icon={s.icon} title={s.name} onPress={() => router.push({ pathname: '/request', params: { serviceId: s.id } })} />
           ))}
         </Grid>
-        <Button label="كل الخدمات" variant="outline" icon="arrow-left" onPress={() => router.push('/services')} />
+        <Button label="كل الخدمات" variant="outline" icon="arrow-back" onPress={() => router.push('/services')} />
 
-        <ListItem icon="image-multiple-outline" title="معرض الأعمال" subtitle="نماذج من أعمالنا السابقة" onPress={() => router.push('/portfolio')} />
+        <ListItem icon="images-outline" title="معرض الأعمال" subtitle="نماذج من أعمالنا السابقة" onPress={() => router.push('/portfolio')} />
 
         {!user ? (
-          <ListItem icon="login" title="تسجيل الدخول" subtitle="لإرسال الطلبات ومتابعة رد الشركة" onPress={() => router.push('/auth/login')} />
+          <ListItem icon="log-in-outline" title="تسجيل الدخول" subtitle="لإرسال الطلبات ومتابعة رد الشركة" onPress={() => router.push('/auth/login')} />
         ) : null}
       </Screen>
     </SafeAreaView>

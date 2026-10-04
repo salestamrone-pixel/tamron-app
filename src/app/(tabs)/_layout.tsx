@@ -5,7 +5,7 @@ import { font, headerOptions, Icon, IconName, palette } from '@/components/kit';
 
 function tabIcon(name: IconName, focusedName: IconName) {
   return function TabIcon({ color, focused }: { color: ColorValue; focused: boolean }) {
-    return <Icon name={focused ? focusedName : name} size={26} color={color as string} />;
+    return <Icon name={focused ? focusedName : name} size={23} color={color as string} />;
   };
 }
 
@@ -15,13 +15,28 @@ export default function TabsLayout() {
       screenOptions={{
         ...headerOptions,
         tabBarActiveTintColor: palette.goldLight,
-        tabBarInactiveTintColor: '#8C8676',
-        tabBarLabelStyle: { fontFamily: font.bold, fontSize: 12 },
-        tabBarStyle: { height: 68, paddingTop: 6, paddingBottom: 8, borderTopWidth: 0, backgroundColor: palette.ink },
+        tabBarInactiveTintColor: '#8F8A7C',
+        tabBarLabelStyle: { fontFamily: font.bold, fontSize: 11, lineHeight: 18, height: 18 },
+        tabBarIconStyle: { height: 26 },
+        tabBarItemStyle: { height: 72, paddingTop: 10, paddingBottom: 10 },
+        // A floating pill instead of an edge-to-edge bar.
+        tabBarStyle: {
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 14,
+          marginHorizontal: 18,
+          height: 72,
+          borderRadius: 36,
+          borderTopWidth: 0,
+          paddingBottom: 0,
+          backgroundColor: palette.ink,
+          boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
+        },
       }}>
-      <Tabs.Screen name="profile" options={{ title: 'حسابي', tabBarIcon: tabIcon('account-circle-outline', 'account-circle') }} />
-      <Tabs.Screen name="orders" options={{ title: 'طلباتي', tabBarIcon: tabIcon('clipboard-text-outline', 'clipboard-text') }} />
-      <Tabs.Screen name="(home)" options={{ title: 'الرئيسية', headerShown: false, tabBarIcon: tabIcon('home-variant-outline', 'home-variant') }} />
+      <Tabs.Screen name="profile" options={{ title: 'حسابي', tabBarIcon: tabIcon('person-outline', 'person') }} />
+      <Tabs.Screen name="orders" options={{ title: 'طلباتي', tabBarIcon: tabIcon('document-text-outline', 'document-text') }} />
+      <Tabs.Screen name="(home)" options={{ title: 'الرئيسية', headerShown: false, tabBarIcon: tabIcon('home-outline', 'home') }} />
     </Tabs>
   );
 }

@@ -1,6 +1,6 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -15,23 +15,23 @@ import {
   ViewStyle,
 } from 'react-native';
 
-export type IconName = keyof typeof MaterialCommunityIcons.glyphMap;
+export type IconName = keyof typeof Ionicons.glyphMap;
 
 // Colours sampled from the company logo: black disc, gold ring, white square-Kufic lettering.
 export const palette = {
   ink: '#0A0A0A',
-  inkSoft: '#17150F',
   gold: '#CCA741',
   goldLight: '#EDD85D',
   goldDark: '#BE9639',
   success: '#0F8A5F',
-  danger: '#C8324B',
-  bg: '#F6F3EA',
+  danger: '#D03A52',
+  bg: '#FAF9F6',
   card: '#FFFFFF',
+  surface: '#F2F0EA',
   text: '#0A0A0A',
-  muted: '#756F60',
-  border: '#E7E1CF',
-  tint: '#F4EDD3',
+  muted: '#7A7568',
+  border: '#ECE9E0',
+  tint: '#F7F1DC',
 };
 
 export const goldGradient = [palette.goldDark, palette.goldLight, palette.gold] as const;
@@ -45,15 +45,15 @@ export const font = {
 };
 
 export const headerOptions = {
-  headerStyle: { backgroundColor: palette.ink },
-  headerTintColor: palette.goldLight,
+  headerStyle: { backgroundColor: palette.bg },
+  headerTintColor: palette.ink,
   headerTitleAlign: 'center' as const,
-  headerTitleStyle: { fontFamily: font.bold, color: '#fff' },
+  headerTitleStyle: { fontFamily: font.bold, color: palette.ink, fontSize: 18 },
   headerShadowVisible: false,
 };
 
 export function Icon({ name, size = 22, color = palette.text }: { name: IconName; size?: number; color?: string }) {
-  return <MaterialCommunityIcons name={name} size={size} color={color} />;
+  return <Ionicons name={name} size={size} color={color} />;
 }
 
 export function Logo({ size = 72 }: { size?: number }) {
@@ -82,7 +82,7 @@ export function KuficPattern({ size = 200, style }: { size?: number; style?: Vie
   return (
     <View style={[{ width: size, height: size, pointerEvents: 'none' }, style]}>
       {KUFIC_BARS.map(([x, y, w, h], i) => (
-        <View key={i} style={{ position: 'absolute', left: x * u, top: y * u, width: w * u, height: h * u, backgroundColor: '#fff', opacity: 0.09 }} />
+        <View key={i} style={{ position: 'absolute', left: x * u, top: y * u, width: w * u, height: h * u, backgroundColor: '#fff', opacity: 0.07 }} />
       ))}
       {KUFIC_GOLD.map(([x, y, w, h], i) => (
         <LinearGradient
@@ -99,7 +99,11 @@ export function KuficPattern({ size = 200, style }: { size?: number; style?: Vie
 
 export function Screen({ children }: { children: React.ReactNode }) {
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
       {children}
     </ScrollView>
   );
@@ -121,14 +125,13 @@ export function Hero({
   return (
     <LinearGradient colors={inkGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
       <KuficPattern size={230} style={styles.heroPattern} />
-      {logo ? <Logo size={76} /> : null}
+      {logo ? <Logo size={68} /> : null}
       {icon ? (
-        <LinearGradient colors={goldGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.heroIcon}>
-          <Icon name={icon} size={28} color={palette.ink} />
-        </LinearGradient>
+        <View style={styles.heroIcon}>
+          <Icon name={icon} size={26} color={palette.goldLight} />
+        </View>
       ) : null}
       <Text style={styles.heroTitle}>{title}</Text>
-      <LinearGradient colors={goldGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.heroRule} />
       {subtitle ? <Text style={styles.heroSubtitle}>{subtitle}</Text> : null}
       {children}
     </LinearGradient>
@@ -146,10 +149,10 @@ export function Card({ children, style, onPress }: { children: React.ReactNode; 
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
-function IconBubble({ icon, color, size = 50 }: { icon: IconName; color?: string; size?: number }) {
+function IconBubble({ icon, color, size = 48 }: { icon: IconName; color?: string; size?: number }) {
   return (
-    <View style={[styles.iconBubble, { width: size, height: size }]}>
-      <Icon name={icon} size={size * 0.5} color={color ?? palette.goldLight} />
+    <View style={[styles.iconBubble, { width: size, height: size, borderRadius: size / 2 }, color ? { backgroundColor: color + '1A' } : null]}>
+      <Icon name={icon} size={size * 0.48} color={color ?? palette.ink} />
     </View>
   );
 }
@@ -174,7 +177,7 @@ export function ListItem({
         <Text style={styles.itemTitle}>{title}</Text>
         {subtitle ? <Text style={styles.muted}>{subtitle}</Text> : null}
       </View>
-      {onPress ? <Icon name="chevron-left" size={24} color={palette.gold} /> : null}
+      {onPress ? <Icon name="chevron-back" size={20} color="#B9B4A6" /> : null}
     </Pressable>
   );
 }
@@ -182,9 +185,8 @@ export function ListItem({
 export function Tile({ icon, title, onPress }: { icon: IconName; title: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.card, styles.tile, pressed && styles.pressed]}>
-      <IconBubble icon={icon} size={52} />
+      <IconBubble icon={icon} size={50} />
       <Text style={styles.tileTitle}>{title}</Text>
-      <View style={styles.tileCorner} />
     </Pressable>
   );
 }
@@ -214,7 +216,7 @@ export function Muted({ children }: { children: React.ReactNode }) {
   return <Text style={styles.muted}>{children}</Text>;
 }
 
-type ButtonVariant = 'primary' | 'dark' | 'outline' | 'danger' | 'success';
+type ButtonVariant = 'primary' | 'gold' | 'dark' | 'outline' | 'danger' | 'success';
 
 export function Button({
   label,
@@ -232,13 +234,13 @@ export function Button({
   disabled?: boolean;
 }) {
   const fg =
-    variant === 'primary' || variant === 'outline' ? palette.ink : variant === 'dark' ? palette.goldLight : '#fff';
+    variant === 'gold' || variant === 'outline' ? palette.ink : variant === 'danger' ? palette.danger : '#fff';
   const inner = loading ? (
     <ActivityIndicator color={fg} />
   ) : (
     <>
       <Text style={[styles.buttonText, { color: fg }]}>{label}</Text>
-      {icon ? <Icon name={icon} size={20} color={fg} /> : null}
+      {icon ? <Icon name={icon} size={19} color={fg} /> : null}
     </>
   );
   return (
@@ -246,7 +248,7 @@ export function Button({
       onPress={onPress}
       disabled={disabled || loading}
       style={({ pressed }) => [styles.buttonWrap, (disabled || loading) && styles.disabled, pressed && styles.pressed]}>
-      {variant === 'primary' ? (
+      {variant === 'gold' ? (
         <LinearGradient colors={goldGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.button}>
           {inner}
         </LinearGradient>
@@ -254,8 +256,8 @@ export function Button({
         <View
           style={[
             styles.button,
-            variant === 'dark' && { backgroundColor: palette.ink },
-            variant === 'danger' && { backgroundColor: palette.danger },
+            (variant === 'primary' || variant === 'dark') && { backgroundColor: palette.ink },
+            variant === 'danger' && { backgroundColor: '#FBE9EC' },
             variant === 'success' && { backgroundColor: palette.success },
             variant === 'outline' && styles.buttonOutline,
           ]}>
@@ -266,14 +268,23 @@ export function Button({
   );
 }
 
-export function Field({ label, multiline, style, ...props }: TextInputProps & { label: string }) {
+export function Field({ label, multiline, style, onFocus, onBlur, ...props }: TextInputProps & { label: string }) {
+  const [focused, setFocused] = useState(false);
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        placeholderTextColor="#A39C89"
+        placeholderTextColor="#A8A292"
         multiline={multiline}
-        style={[styles.input, multiline && styles.multiline, style]}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
+        style={[styles.input, multiline && styles.multiline, focused && styles.inputFocused, style]}
         {...props}
       />
     </View>
@@ -282,7 +293,7 @@ export function Field({ label, multiline, style, ...props }: TextInputProps & { 
 
 export function Badge({ label, color }: { label: string; color: string }) {
   return (
-    <View style={[styles.badge, { backgroundColor: color + '1F' }]}>
+    <View style={[styles.badge, { backgroundColor: color + '1A' }]}>
       <View style={[styles.badgeDot, { backgroundColor: color }]} />
       <Text style={[styles.badgeText, { color }]}>{label}</Text>
     </View>
@@ -299,12 +310,12 @@ export function ErrorText({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Empty({ icon = 'inbox-outline', title, message, children }: { icon?: IconName; title: string; message?: string; children?: React.ReactNode }) {
+export function Empty({ icon = 'file-tray-outline', title, message, children }: { icon?: IconName; title: string; message?: string; children?: React.ReactNode }) {
   return (
     <View style={styles.empty}>
-      <IconBubble icon={icon} size={84} />
+      <IconBubble icon={icon} size={88} />
       <Text style={[styles.h1, { textAlign: 'center' }]}>{title}</Text>
-      {message ? <Text style={[styles.muted, { textAlign: 'center' }]}>{message}</Text> : null}
+      {message ? <Text style={[styles.muted, { textAlign: 'center', fontSize: 14 }]}>{message}</Text> : null}
       <View style={styles.emptyActions}>{children}</View>
     </View>
   );
@@ -339,11 +350,10 @@ export function Dialog({
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.dialog} onPress={() => {}}>
-          <LinearGradient colors={goldGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.dialogRule} />
           <ScrollView contentContainerStyle={styles.dialogBody} keyboardShouldPersistTaps="handled">
             {icon ? (
               <View style={styles.dialogIcon}>
-                <IconBubble icon={icon} color={tone} size={64} />
+                <IconBubble icon={icon} color={tone} size={68} />
               </View>
             ) : null}
             <Text style={[styles.dialogTitle, icon ? { textAlign: 'center' } : null]}>{title}</Text>
@@ -363,75 +373,73 @@ export function Row({ children }: { children: React.ReactNode }) {
 export function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={[styles.chip, selected && styles.chipSelected]}>
-      <Text style={[styles.chipText, selected && { color: palette.goldLight }]}>{label}</Text>
+      <Text style={[styles.chipText, selected && { color: '#fff' }]}>{label}</Text>
     </Pressable>
   );
 }
 
-const shadow = '0 6px 18px rgba(10,10,10,0.07)';
+const shadow = '0 8px 24px rgba(10,10,10,0.06)';
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: palette.bg },
-  content: { padding: 16, gap: 14, width: '100%', maxWidth: 720, alignSelf: 'center', paddingBottom: 48 },
-  hero: { borderRadius: 26, padding: 24, gap: 10, overflow: 'hidden', alignItems: 'flex-end' },
-  heroPattern: { position: 'absolute', left: -46, top: -30 },
-  heroIcon: { width: 54, height: 54, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  heroTitle: { color: '#fff', fontSize: 28, fontFamily: font.black, textAlign: 'right' },
-  heroRule: { width: 56, height: 4, borderRadius: 1 },
-  heroSubtitle: { color: '#D9D3C0', fontSize: 15, fontFamily: font.regular, textAlign: 'right', lineHeight: 23 },
-  card: {
-    backgroundColor: palette.card,
-    borderRadius: 18,
-    padding: 16,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: palette.border,
-    boxShadow: shadow,
+  content: { padding: 18, gap: 14, width: '100%', maxWidth: 720, alignSelf: 'center', paddingBottom: 120 },
+  hero: { borderRadius: 30, padding: 24, gap: 10, overflow: 'hidden', alignItems: 'flex-end' },
+  heroPattern: { position: 'absolute', left: -50, top: -34 },
+  heroIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
-  pressed: { opacity: 0.85, transform: [{ scale: 0.985 }] },
-  listItem: { flexDirection: 'row-reverse', alignItems: 'center', gap: 14 },
+  heroTitle: { color: '#fff', fontSize: 28, fontFamily: font.black, textAlign: 'right' },
+  heroSubtitle: { color: '#CFC9B8', fontSize: 15, fontFamily: font.regular, textAlign: 'right', lineHeight: 24 },
+  card: { backgroundColor: palette.card, borderRadius: 24, padding: 18, gap: 8, boxShadow: shadow },
+  pressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
+  listItem: { flexDirection: 'row-reverse', alignItems: 'center', gap: 14, paddingVertical: 14 },
   listText: { flex: 1, gap: 2 },
-  iconBubble: { borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: palette.ink },
+  iconBubble: { alignItems: 'center', justifyContent: 'center', backgroundColor: palette.tint },
   itemTitle: { fontSize: 16, fontFamily: font.bold, color: palette.text, textAlign: 'right' },
   grid: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 12 },
-  tile: { flexGrow: 1, flexBasis: '45%', alignItems: 'flex-end', gap: 14, minHeight: 124, justifyContent: 'space-between', overflow: 'hidden' },
+  tile: { flexGrow: 1, flexBasis: '45%', alignItems: 'flex-end', gap: 16, minHeight: 124, justifyContent: 'space-between' },
   tileTitle: { fontSize: 15, fontFamily: font.bold, color: palette.text, textAlign: 'right' },
-  tileCorner: { position: 'absolute', left: 14, top: 14, width: 10, height: 10, backgroundColor: palette.gold },
-  h1: { fontSize: 24, fontFamily: font.black, color: palette.text, textAlign: 'right' },
-  sectionRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: 8, marginTop: 8 },
-  sectionMark: { width: 10, height: 10, backgroundColor: palette.gold },
-  section: { fontSize: 18, fontFamily: font.black, color: palette.text, textAlign: 'right' },
+  h1: { fontSize: 26, fontFamily: font.black, color: palette.text, textAlign: 'right' },
+  sectionRow: { flexDirection: 'row-reverse', alignItems: 'center', gap: 8, marginTop: 10 },
+  sectionMark: { width: 8, height: 8, backgroundColor: palette.gold },
+  section: { fontSize: 19, fontFamily: font.black, color: palette.text, textAlign: 'right' },
   title: { fontSize: 17, fontFamily: font.bold, color: palette.text, textAlign: 'right' },
-  p: { fontSize: 15, fontFamily: font.regular, color: palette.text, lineHeight: 24, textAlign: 'right' },
-  muted: { fontSize: 13, fontFamily: font.regular, color: palette.muted, lineHeight: 20, textAlign: 'right' },
-  field: { gap: 6 },
+  p: { fontSize: 15, fontFamily: font.regular, color: palette.text, lineHeight: 25, textAlign: 'right' },
+  muted: { fontSize: 13, fontFamily: font.regular, color: palette.muted, lineHeight: 21, textAlign: 'right' },
+  field: { gap: 8 },
   label: { fontSize: 14, fontFamily: font.bold, color: palette.text, textAlign: 'right' },
   input: {
-    backgroundColor: palette.card,
+    backgroundColor: palette.surface,
     borderWidth: 1.5,
-    borderColor: palette.border,
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 13,
+    borderColor: 'transparent',
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 15,
     fontSize: 15,
     fontFamily: font.regular,
     color: palette.text,
     textAlign: 'right',
   },
-  multiline: { minHeight: 120, textAlignVertical: 'top' },
-  buttonWrap: { borderRadius: 14, overflow: 'hidden', flexGrow: 1 },
+  inputFocused: { borderColor: palette.gold, backgroundColor: palette.card },
+  multiline: { minHeight: 124, textAlignVertical: 'top' },
+  buttonWrap: { borderRadius: 999, overflow: 'hidden', flexGrow: 1 },
   button: {
-    borderRadius: 14,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    borderRadius: 999,
+    minHeight: 54,
+    paddingHorizontal: 22,
     flexDirection: 'row',
     gap: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonOutline: { borderWidth: 1.5, borderColor: palette.ink, backgroundColor: 'transparent' },
+  buttonOutline: { borderWidth: 1.5, borderColor: '#DCD8CC', backgroundColor: 'transparent' },
   buttonText: { fontSize: 16, fontFamily: font.bold },
-  disabled: { opacity: 0.5 },
+  disabled: { opacity: 0.45 },
   badge: {
     alignSelf: 'flex-end',
     flexDirection: 'row-reverse',
@@ -441,42 +449,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 5,
   },
-  badgeDot: { width: 7, height: 7 },
+  badgeDot: { width: 6, height: 6, borderRadius: 3 },
   badgeText: { fontSize: 12, fontFamily: font.bold },
   error: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#FBE6EA',
-    padding: 12,
-    borderRadius: 12,
+    backgroundColor: '#FBE9EC',
+    padding: 14,
+    borderRadius: 16,
   },
   errorText: { flex: 1, color: palette.danger, fontSize: 14, fontFamily: font.medium, textAlign: 'right' },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, gap: 12, backgroundColor: palette.bg },
-  emptyActions: { width: '100%', maxWidth: 360, gap: 10, marginTop: 8 },
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', padding: 20 },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 28, paddingBottom: 110, gap: 12, backgroundColor: palette.bg },
+  emptyActions: { width: '100%', maxWidth: 360, gap: 10, marginTop: 10 },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 20 },
   dialog: {
     backgroundColor: palette.card,
-    borderRadius: 24,
+    borderRadius: 30,
     width: '100%',
     maxWidth: 440,
     maxHeight: '90%',
     overflow: 'hidden',
-    boxShadow: '0 24px 60px rgba(0,0,0,0.45)',
+    boxShadow: '0 24px 60px rgba(0,0,0,0.35)',
   },
-  dialogRule: { height: 5 },
-  dialogBody: { padding: 22, gap: 14 },
+  dialogBody: { padding: 24, gap: 14 },
   dialogIcon: { alignSelf: 'center' },
-  dialogTitle: { fontSize: 20, fontFamily: font.black, color: palette.text, textAlign: 'right' },
+  dialogTitle: { fontSize: 21, fontFamily: font.black, color: palette.text, textAlign: 'right' },
   row: { flexDirection: 'row-reverse', gap: 10, flexWrap: 'wrap', alignItems: 'center' },
-  chip: {
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: palette.border,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    backgroundColor: palette.card,
-  },
-  chipSelected: { backgroundColor: palette.ink, borderColor: palette.ink },
+  chip: { borderRadius: 999, paddingHorizontal: 16, paddingVertical: 9, backgroundColor: palette.surface },
+  chipSelected: { backgroundColor: palette.ink },
   chipText: { fontSize: 13, color: palette.text, fontFamily: font.bold },
 });

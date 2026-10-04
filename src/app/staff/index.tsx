@@ -104,8 +104,8 @@ function Portal({ staff }: { staff: StaffMember }) {
         ) : (
           <Muted>لم تسجل حضورك اليوم.</Muted>
         )}
-        {!checkedIn ? <Button label="تسجيل الحضور" icon="map-marker-check" variant="success" onPress={() => punch('in')} loading={busy} /> : null}
-        {checkedIn && !checkedOut ? <Button label="تسجيل الانصراف" icon="logout-variant" variant="danger" onPress={() => punch('out')} loading={busy} /> : null}
+        {!checkedIn ? <Button label="تسجيل الحضور" icon="location" variant="success" onPress={() => punch('in')} loading={busy} /> : null}
+        {checkedIn && !checkedOut ? <Button label="تسجيل الانصراف" icon="exit-outline" variant="danger" onPress={() => punch('out')} loading={busy} /> : null}
         <Muted>يُسجَّل موقعك الجغرافي مع الحضور والانصراف ويظهر للإدارة.</Muted>
       </Card>
 
@@ -119,7 +119,7 @@ function Portal({ staff }: { staff: StaffMember }) {
         </Card>
       ))}
 
-      <Dialog visible={message !== null} icon="map-marker-radius-outline" title={message?.title ?? ''} message={message?.body} onClose={() => setMessage(null)}>
+      <Dialog visible={message !== null} icon="navigate-circle-outline" title={message?.title ?? ''} message={message?.body} onClose={() => setMessage(null)}>
         <Button label="حسناً" onPress={() => setMessage(null)} />
       </Dialog>
     </Screen>

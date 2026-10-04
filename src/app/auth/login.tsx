@@ -55,11 +55,11 @@ export default function LoginScreen() {
       <ErrorText>{error}</ErrorText>
       <Field label="البريد الإلكتروني" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" style={{ textAlign: 'left' }} />
       <Field label="كلمة المرور" value={password} onChangeText={setPassword} secureTextEntry style={{ textAlign: 'left' }} />
-      <Button label="تسجيل الدخول" icon="login" onPress={login} loading={loading} />
+      <Button label="تسجيل الدخول" icon="log-in-outline" onPress={login} loading={loading} />
       <Button label="إنشاء حساب جديد" variant="outline" onPress={() => router.replace('/auth/register')} />
       <Button label="نسيت كلمة المرور؟" variant="outline" onPress={reset} />
 
-      <Dialog visible={resetSent} icon="email-check-outline" title="تحقق من بريدك" message="إذا كان البريد مسجلاً لدينا فستصلك رسالة لإعادة تعيين كلمة المرور." onClose={() => setResetSent(false)}>
+      <Dialog visible={resetSent} icon="mail-outline" title="تحقق من بريدك" message="إذا كان البريد مسجلاً لدينا فستصلك رسالة لإعادة تعيين كلمة المرور." onClose={() => setResetSent(false)}>
         <Button label="حسناً" onPress={() => setResetSent(false)} />
       </Dialog>
     </Screen>

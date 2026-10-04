@@ -55,7 +55,7 @@ function Track({ email, name }: { email: string; name: string }) {
 
       {points === null ? <Loading /> : null}
       {points?.length === 0 ? (
-        <Empty icon="map-marker-off-outline" title="لا توجد تحركات مسجلة" message="لم يُسجَّل أي موقع لهذا الموظف في هذا اليوم. قد يكون التتبع متوقفاً على هاتفه." />
+        <Empty icon="location-outline" title="لا توجد تحركات مسجلة" message="لم يُسجَّل أي موقع لهذا الموظف في هذا اليوم. قد يكون التتبع متوقفاً على هاتفه." />
       ) : null}
       {points?.map((p) => (
         <Card key={p.id}>

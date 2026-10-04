@@ -28,7 +28,7 @@ export default function RequestScreen() {
     return (
       <>
         {header}
-        <Empty icon="account-lock-outline" title="سجّل الدخول أولاً" message="تحتاج حساباً لإرسال الطلب ومتابعة رد الشركة.">
+        <Empty icon="lock-closed-outline" title="سجّل الدخول أولاً" message="تحتاج حساباً لإرسال الطلب ومتابعة رد الشركة.">
           <Button label="تسجيل الدخول" onPress={() => router.push('/auth/login')} />
         </Empty>
       </>
@@ -87,9 +87,9 @@ export default function RequestScreen() {
       <Field label="المدينة / موقع التركيب" value={location} onChangeText={setLocation} />
       <Field label="رقم الجوال للتواصل *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
-      <Button label="إرسال الطلب" icon="send" onPress={submit} loading={sending} />
+      <Button label="إرسال الطلب" icon="paper-plane-outline" onPress={submit} loading={sending} />
 
-      <Dialog visible={sent} icon="check-circle-outline" tone={palette.success} title="تم إرسال طلبك" message="سنراجع المواصفات ونرد عليك بعرض السعر. تابع الرد من صفحة «طلباتي»." onClose={finish}>
+      <Dialog visible={sent} icon="checkmark-circle-outline" tone={palette.success} title="تم إرسال طلبك" message="سنراجع المواصفات ونرد عليك بعرض السعر. تابع الرد من صفحة «طلباتي»." onClose={finish}>
         <Button label="عرض طلباتي" onPress={finish} />
       </Dialog>
     </Screen>
