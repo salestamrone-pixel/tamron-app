@@ -71,6 +71,15 @@ service cloud.firestore {
       }
     }
 
+    // Leave and permission requests: staff file their own, only admins decide.
+    match /hrRequests/{id} {
+      allow create: if isStaff()
+        && request.resource.data.email == email()
+        && request.resource.data.status == 'pending';
+      allow read: if isAdmin() || (isStaff() && resource.data.email == email());
+      allow update: if isAdmin();
+    }
+
     match /consents/{mail} {
       allow read: if isAdmin() || (isStaff() && email() == mail);
       allow write: if isStaff() && email() == mail;

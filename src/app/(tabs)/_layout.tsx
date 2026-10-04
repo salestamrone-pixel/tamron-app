@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router/js-tabs';
 import { ColorValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { font, headerOptions, Icon, IconName, palette } from '@/components/kit';
 
@@ -10,6 +11,11 @@ function tabIcon(name: IconName, focusedName: IconName) {
 }
 
 export default function TabsLayout() {
+  // Lift the floating bar above the Android gesture/nav bar so the system
+  // back arrow never sits on top of the tab icons.
+  const insets = useSafeAreaInsets();
+  const bottomGap = Math.max(insets.bottom, 12) + 10;
+
   return (
     <Tabs
       screenOptions={{
@@ -24,7 +30,7 @@ export default function TabsLayout() {
           position: 'absolute',
           left: 0,
           right: 0,
-          bottom: 14,
+          bottom: bottomGap,
           marginHorizontal: 18,
           height: 72,
           borderRadius: 36,

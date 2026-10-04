@@ -1,8 +1,8 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { collection, doc, getDocs, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
-import { Badge, Button, Card, Dialog, Muted, P, palette, Screen, Title } from '@/components/kit';
+import { Badge, Button, Card, Dialog, ListItem, Muted, P, palette, Screen, Title } from '@/components/kit';
 import { formatDate } from '@/components/quote-card';
 import { StaffGate } from '@/components/staff-gate';
 import { TrackingCard } from '@/components/tracking-card';
@@ -17,6 +17,7 @@ function formatTime(ts: { toDate: () => Date } | null | undefined) {
 }
 
 function Portal({ staff }: { staff: StaffMember }) {
+  const router = useRouter();
   const date = todayKey();
   const recordId = `${staff.email}_${date}`;
   const [today, setToday] = useState<AttendanceRecord | null>(null);
@@ -108,6 +109,8 @@ function Portal({ staff }: { staff: StaffMember }) {
         {checkedIn && !checkedOut ? <Button label="تسجيل الانصراف" icon="exit-outline" variant="danger" onPress={() => punch('out')} loading={busy} /> : null}
         <Muted>يُسجَّل موقعك الجغرافي مع الحضور والانصراف ويظهر للإدارة.</Muted>
       </Card>
+
+      <ListItem icon="calendar-outline" title="إجازاتي وأذوناتي" subtitle="تقديم طلب ومتابعة الرصيد والموافقات" onPress={() => router.push('/staff/requests')} />
 
       <TrackingCard staff={staff} />
 

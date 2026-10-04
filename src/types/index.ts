@@ -56,6 +56,23 @@ export interface PortfolioItem {
   imageUrl?: string;
 }
 
+export type HrRequestType = 'leave' | 'permission';
+export type HrRequestStatus = 'pending' | 'approved' | 'rejected';
+
+export interface HrRequest {
+  id: string;
+  email: string;
+  name: string;
+  type: HrRequestType;
+  from: string;
+  to: string;
+  days: number;
+  reason: string;
+  status: HrRequestStatus;
+  decisionNote?: string;
+  createdAt: Timestamp | null;
+}
+
 export interface WorkSite {
   id: string;
   name: string;
