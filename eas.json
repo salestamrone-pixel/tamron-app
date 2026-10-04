@@ -1,30 +1,28 @@
 {
   "cli": {
-    "version": ">= 5.4.0"
+    "appVersionSource": "remote"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
+    "base": {
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyBC5CWoFCg0_-iiT1ahb84DP4phf3fzQRI",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "tamrone-8defe.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "tamrone-8defe",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "tamrone-8defe.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "148224915201",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:148224915201:web:e1a0e08e787bf9ee004d00"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "extends": "base",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
-      "distribution": "store"
-    }
-  },
-  "submit": {
-    "production": {
-      "ios": {
-        "appleId": "your-apple-id@example.com",
-        "ascAppId": "your-asc-app-id",
-        "appleTeamId": "your-apple-team-id"
-      },
-      "android": {
-        "serviceAccount": "path/to/service-account.json",
-        "track": "internal"
-      }
+      "extends": "base",
+      "autoIncrement": true
     }
   }
 }

@@ -63,6 +63,17 @@ service cloud.firestore {
     match /locations/{mail} {
       allow read: if isAdmin() || (isStaff() && email() == mail);
       allow write: if isStaff() && email() == mail;
+
+      // Movement history: written by the employee's phone, read only by admins.
+      match /points/{id} {
+        allow read: if isAdmin();
+        allow create: if isStaff() && email() == mail;
+      }
+    }
+
+    match /consents/{mail} {
+      allow read: if isAdmin() || (isStaff() && email() == mail);
+      allow write: if isStaff() && email() == mail;
     }
   }
 }

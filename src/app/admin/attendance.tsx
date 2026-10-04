@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
@@ -24,6 +24,7 @@ function time(ts: { toDate: () => Date } | null | undefined) {
 }
 
 function Attendance() {
+  const router = useRouter();
   const [day, setDay] = useState(new Date());
   const date = todayKey(day);
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
@@ -86,7 +87,10 @@ function Attendance() {
             {last ? (
               <>
                 <Muted>آخر موقع مسجل: {formatDate(last.updatedAt, true)}</Muted>
-                <Button label="عرض آخر موقع على الخريطة" variant="outline" onPress={() => Linking.openURL(mapsUrl(last))} />
+                <Row>
+                  <Button label="آخر موقع على الخريطة" variant="outline" icon="map-outline" onPress={() => Linking.openURL(mapsUrl(last))} />
+                  <Button label="سجل التحركات" variant="dark" icon="map-marker-path" onPress={() => router.push({ pathname: '/admin/track', params: { email: member.email, name: member.name } })} />
+                </Row>
               </>
             ) : (
               <Muted>لا يوجد موقع مسجل.</Muted>

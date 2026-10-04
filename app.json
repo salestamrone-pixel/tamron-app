@@ -15,7 +15,8 @@
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.tamrone.app"
     },
     "web": {
       "output": "static",
@@ -30,11 +31,25 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 180
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "يستخدم تامرون موقعك لتسجيل حضور الموظفين تلقائياً ومتابعة الإدارة لمواقعهم، حتى عند إغلاق التطبيق.",
+          "locationWhenInUsePermission": "يستخدم تامرون موقعك لتسجيل الحضور من موقع العمل.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "isIosBackgroundLocationEnabled": true
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "ios": {
+      "bundleIdentifier": "com.tamrone.app",
+      "supportsTablet": false
     }
   }
 }

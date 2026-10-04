@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Badge, Button, Card, Dialog, Muted, P, palette, Screen, Title } from '@/components/kit';
 import { formatDate } from '@/components/quote-card';
 import { StaffGate } from '@/components/staff-gate';
+import { TrackingCard } from '@/components/tracking-card';
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { getCurrentPoint, nearestSite, todayKey } from '@/lib/geo';
@@ -107,6 +108,8 @@ function Portal({ staff }: { staff: StaffMember }) {
         {checkedIn && !checkedOut ? <Button label="تسجيل الانصراف" icon="logout-variant" variant="danger" onPress={() => punch('out')} loading={busy} /> : null}
         <Muted>يُسجَّل موقعك الجغرافي مع الحضور والانصراف ويظهر للإدارة.</Muted>
       </Card>
+
+      <TrackingCard staff={staff} />
 
       {history.length > 0 ? <Title>السجل السابق</Title> : null}
       {history.map((r) => (
