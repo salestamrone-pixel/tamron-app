@@ -12,7 +12,7 @@ export default function ServicesScreen() {
         <ListItem
           key={service.id}
           icon={service.icon}
-         
+          color={service.color}
           title={service.name}
           subtitle={service.description}
           onPress={() => router.push({ pathname: '/request', params: { serviceId: service.id } })}

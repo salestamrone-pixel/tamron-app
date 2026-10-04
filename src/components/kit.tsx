@@ -25,7 +25,7 @@ export const palette = {
   goldDark: '#BE9639',
   success: '#0F8A5F',
   danger: '#D03A52',
-  bg: '#FAF9F6',
+  bg: '#FBF7EE',
   card: '#FFFFFF',
   surface: '#F2F0EA',
   text: '#0A0A0A',
@@ -36,6 +36,7 @@ export const palette = {
 
 export const goldGradient = [palette.goldDark, palette.goldLight, palette.gold] as const;
 export const inkGradient = ['#000000', '#1C1910'] as const;
+export const heroGradient = ['#F9E27D', '#EDB93F', '#E39B2C'] as const;
 
 export const font = {
   regular: 'Tajawal_400Regular',
@@ -82,15 +83,12 @@ export function KuficPattern({ size = 200, style }: { size?: number; style?: Vie
   return (
     <View style={[{ width: size, height: size, pointerEvents: 'none' }, style]}>
       {KUFIC_BARS.map(([x, y, w, h], i) => (
-        <View key={i} style={{ position: 'absolute', left: x * u, top: y * u, width: w * u, height: h * u, backgroundColor: '#fff', opacity: 0.07 }} />
+        <View key={i} style={{ position: 'absolute', left: x * u, top: y * u, width: w * u, height: h * u, backgroundColor: '#0A0A0A', opacity: 0.1 }} />
       ))}
       {KUFIC_GOLD.map(([x, y, w, h], i) => (
-        <LinearGradient
+        <View
           key={`g${i}`}
-          colors={goldGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{ position: 'absolute', left: x * u, top: y * u, width: w * u, height: h * u, opacity: 0.9 }}
+          style={{ position: 'absolute', left: x * u, top: y * u, width: w * u, height: h * u, backgroundColor: palette.ink, opacity: 0.85 }}
         />
       ))}
     </View>
@@ -123,12 +121,12 @@ export function Hero({
   children?: React.ReactNode;
 }) {
   return (
-    <LinearGradient colors={inkGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+    <LinearGradient colors={heroGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
       <KuficPattern size={230} style={styles.heroPattern} />
       {logo ? <Logo size={68} /> : null}
       {icon ? (
         <View style={styles.heroIcon}>
-          <Icon name={icon} size={26} color={palette.goldLight} />
+          <Icon name={icon} size={26} color={palette.ink} />
         </View>
       ) : null}
       <Text style={styles.heroTitle}>{title}</Text>
@@ -149,10 +147,10 @@ export function Card({ children, style, onPress }: { children: React.ReactNode; 
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
-function IconBubble({ icon, color, size = 48 }: { icon: IconName; color?: string; size?: number }) {
+function IconBubble({ icon, color, size = 48, solid = false }: { icon: IconName; color?: string; size?: number; solid?: boolean }) {
   return (
-    <View style={[styles.iconBubble, { width: size, height: size, borderRadius: size / 2 }, color ? { backgroundColor: color + '1A' } : null]}>
-      <Icon name={icon} size={size * 0.48} color={color ?? palette.ink} />
+    <View style={[styles.iconBubble, { width: size, height: size, borderRadius: size / 2 }, color ? { backgroundColor: solid ? color : color + '1A' } : null]}>
+      <Icon name={icon} size={size * 0.48} color={color ? (solid ? '#fff' : color) : palette.ink} />
     </View>
   );
 }
@@ -172,7 +170,7 @@ export function ListItem({
 }) {
   return (
     <Pressable onPress={onPress} disabled={!onPress} style={({ pressed }) => [styles.card, styles.listItem, pressed && styles.pressed]}>
-      <IconBubble icon={icon} color={color} />
+      <IconBubble icon={icon} color={color} solid />
       <View style={styles.listText}>
         <Text style={styles.itemTitle}>{title}</Text>
         {subtitle ? <Text style={styles.muted}>{subtitle}</Text> : null}
@@ -182,10 +180,10 @@ export function ListItem({
   );
 }
 
-export function Tile({ icon, title, onPress }: { icon: IconName; title: string; onPress: () => void }) {
+export function Tile({ icon, title, onPress, color }: { icon: IconName; title: string; onPress: () => void; color?: string }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, styles.tile, pressed && styles.pressed]}>
-      <IconBubble icon={icon} size={50} />
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, styles.tile, color ? { backgroundColor: color + '17' } : null, pressed && styles.pressed]}>
+      <IconBubble icon={icon} color={color} size={50} solid />
       <Text style={styles.tileTitle}>{title}</Text>
     </Pressable>
   );
@@ -391,10 +389,10 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(10,10,10,0.1)',
   },
-  heroTitle: { color: '#fff', fontSize: 28, fontFamily: font.black, textAlign: 'right' },
-  heroSubtitle: { color: '#CFC9B8', fontSize: 15, fontFamily: font.regular, textAlign: 'right', lineHeight: 24 },
+  heroTitle: { color: palette.ink, fontSize: 28, fontFamily: font.black, textAlign: 'right' },
+  heroSubtitle: { color: '#3D3210', fontSize: 15, fontFamily: font.regular, textAlign: 'right', lineHeight: 24 },
   card: { backgroundColor: palette.card, borderRadius: 24, padding: 18, gap: 8, boxShadow: shadow },
   pressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
   listItem: { flexDirection: 'row-reverse', alignItems: 'center', gap: 14, paddingVertical: 14 },

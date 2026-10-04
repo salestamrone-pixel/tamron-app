@@ -77,7 +77,7 @@ export default function RequestScreen() {
   return (
     <Screen>
       {header}
-      <ListItem icon={service.icon} title={service.name} subtitle={service.description} />
+      <ListItem icon={service.icon} color={service.color} title={service.name} subtitle={service.description} />
 
       <ErrorText>{error}</ErrorText>
 

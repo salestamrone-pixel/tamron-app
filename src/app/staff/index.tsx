@@ -110,7 +110,7 @@ function Portal({ staff }: { staff: StaffMember }) {
         <Muted>يُسجَّل موقعك الجغرافي مع الحضور والانصراف ويظهر للإدارة.</Muted>
       </Card>
 
-      <ListItem icon="calendar-outline" title="إجازاتي وأذوناتي" subtitle="تقديم طلب ومتابعة الرصيد والموافقات" onPress={() => router.push('/staff/requests')} />
+      <ListItem icon="calendar-outline" color="#F59E0B" title="إجازاتي وأذوناتي" subtitle="تقديم طلب ومتابعة الرصيد والموافقات" onPress={() => router.push('/staff/requests')} />
 
       <TrackingCard staff={staff} />
 
