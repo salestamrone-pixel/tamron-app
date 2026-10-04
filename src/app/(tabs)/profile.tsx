@@ -1,11 +1,12 @@
 import { useRouter } from 'expo-router';
-import { deleteUser, EmailAuthProvider, GoogleAuthProvider, reauthenticateWithCredential, reauthenticateWithPopup } from 'firebase/auth';
+import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { collection, deleteDoc, getDocs, query, where } from 'firebase/firestore';
 import { useState } from 'react';
 
 import { Button, Card, Dialog, Empty, ErrorText, Field, ListItem, Loading, Muted, P, palette, Screen, Title } from '@/components/kit';
 import { auth, db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
+import { reauthWithGoogle } from '@/lib/google';
 
 export default function ProfileScreen() {
   const { user, staff, isStaff, isAdmin, loading, logout } = useAuth();
@@ -37,7 +38,7 @@ export default function ProfileScreen() {
       if (usesPassword) {
         await reauthenticateWithCredential(current, EmailAuthProvider.credential(current.email, password));
       } else {
-        await reauthenticateWithPopup(current, new GoogleAuthProvider());
+        await reauthWithGoogle(current);
       }
       const mine = await getDocs(query(collection(db, 'quoteRequests'), where('userId', '==', current.uid)));
       await Promise.all(mine.docs.map((d) => deleteDoc(d.ref)));
