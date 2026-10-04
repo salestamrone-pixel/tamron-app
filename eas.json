@@ -10,7 +10,8 @@
         "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "tamrone-8defe",
         "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "tamrone-8defe.firebasestorage.app",
         "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "148224915201",
-        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:148224915201:web:e1a0e08e787bf9ee004d00"
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:148224915201:web:e1a0e08e787bf9ee004d00",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "148224915201-a9sjfrg38n5d285un5mqvhdtl64nvv4n.apps.googleusercontent.com"
       }
     },
     "preview": {
