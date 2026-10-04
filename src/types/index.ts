@@ -1,51 +1,84 @@
+import type { Timestamp } from 'firebase/firestore';
+
 export interface User {
   uid: string;
   email: string;
   displayName?: string;
-  phoneNumber?: string;
-  company?: string;
-  address?: string;
-  createdAt: Date;
+  emailVerified: boolean;
+}
+
+export type StaffRole = 'employee' | 'admin';
+
+export interface StaffMember {
+  email: string;
+  name: string;
+  jobTitle: string;
+  role: StaffRole;
+  active: boolean;
 }
 
 export interface Service {
   id: string;
   name: string;
-  nameAr: string;
   description: string;
-  descriptionAr: string;
-  category: 'banners' | 'signage' | 'laser' | 'cnc' | 'other';
-  price: number;
-  image: string;
-  details: string[];
-  detailsAr: string[];
+  specHint: string;
 }
 
-export interface Order {
+export type QuoteStatus = 'new' | 'quoted' | 'in_progress' | 'done' | 'cancelled';
+
+export interface QuoteReply {
+  price: string;
+  note: string;
+  repliedAt: Timestamp | null;
+}
+
+export interface QuoteRequest {
   id: string;
   userId: string;
+  userName: string;
+  userEmail: string;
+  phone: string;
   serviceId: string;
-  quantity: number;
-  totalPrice: number;
-  status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
-  notes: string;
-  createdAt: Date;
-  updatedAt: Date;
+  serviceName: string;
+  details: string;
+  dimensions: string;
+  quantity: string;
+  location: string;
+  status: QuoteStatus;
+  reply?: QuoteReply;
+  createdAt: Timestamp | null;
 }
 
-export interface CartItem {
-  serviceId: string;
-  service: Service;
-  quantity: number;
-}
-
-export interface Portfolio {
+export interface PortfolioItem {
   id: string;
   title: string;
-  titleAr: string;
   description: string;
-  descriptionAr: string;
-  images: string[];
-  category: string;
-  createdAt: Date;
+  imageUrl?: string;
+}
+
+export interface WorkSite {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  radius: number;
+}
+
+export interface GeoPoint {
+  lat: number;
+  lng: number;
+  accuracy: number | null;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  email: string;
+  name: string;
+  date: string;
+  siteId: string;
+  siteName: string;
+  checkIn: Timestamp | null;
+  checkInLoc: GeoPoint;
+  checkOut?: Timestamp | null;
+  checkOutLoc?: GeoPoint;
 }
