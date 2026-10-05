@@ -37,6 +37,11 @@ service cloud.firestore {
         && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /portfolio/{id} {
       allow read: if true;
       allow write: if isAdmin();

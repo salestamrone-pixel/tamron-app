@@ -19,6 +19,7 @@ export default function HomeScreen() {
     {
       key: 'services',
       label: 'خدماتنا',
+      subtitle: `${SERVICES.length} خدمة`,
       icon: 'grid-outline',
       color: '#F59E0B',
       subs: SERVICES.map((s) => ({
@@ -30,8 +31,18 @@ export default function HomeScreen() {
       })),
     },
     {
+      key: 'store',
+      label: 'متجرنا',
+      subtitle: 'منتجاتنا وأعمالنا',
+      icon: 'storefront-outline',
+      color: '#EF4444',
+      subs: [],
+      onPress: go('/store'),
+    },
+    {
       key: 'work',
       label: 'أعمالنا',
+      subtitle: 'معرض وطلباتك',
       icon: 'images-outline',
       color: '#EC4899',
       subs: [
@@ -53,14 +64,16 @@ export default function HomeScreen() {
       subs.push({ key: 'hr', label: 'طلبات الإجازات', icon: 'documents-outline', color: '#F97316', onPress: go('/admin/hr') });
       subs.push({ key: 'emp', label: 'الموظفون', icon: 'people-outline', color: '#06B6D4', onPress: go('/admin/employees') });
       subs.push({ key: 'sites', label: 'مواقع العمل', icon: 'navigate-circle-outline', color: '#3B82F6', onPress: go('/admin/sites') });
+      subs.push({ key: 'shop', label: 'إدارة المتجر', icon: 'storefront-outline', color: '#EC4899', onPress: go('/admin/store') });
       subs.push({ key: 'quotes', label: 'طلبات العملاء', icon: 'chatbubbles-outline', color: '#FF6B4A', onPress: go('/admin/requests') });
     }
-    items.push({ key: 'team', label: 'فريقنا', icon: 'people-outline', color: '#14B8A6', subs });
+    items.push({ key: 'team', label: 'فريقنا', subtitle: 'للموظفين والإدارة', icon: 'people-outline', color: '#14B8A6', subs });
   }
 
   items.push({
     key: 'about',
     label: 'من نحن',
+    subtitle: 'تعرّف علينا',
     icon: 'information-circle-outline',
     color: '#A855F7',
     subs: [],
@@ -70,6 +83,7 @@ export default function HomeScreen() {
   items.push({
     key: 'me',
     label: 'حسابي',
+    subtitle: 'ملفك وخياراتك',
     icon: 'person-outline',
     color: '#3B82F6',
     subs: user
@@ -116,7 +130,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
   title: { color: '#fff', fontSize: 20, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
   subtitle: { color: '#EFE6CC', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
-  spacer: { height: 340 },
+  spacer: { height: 220 },
   cta: {
     flexDirection: 'row',
     gap: 8,

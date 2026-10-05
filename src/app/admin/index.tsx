@@ -14,6 +14,7 @@ export default function AdminHome() {
           <ListItem icon="document-text-outline" color="#FF6B4A" title="طلبات العملاء" subtitle="مراجعة المواصفات والرد بعرض السعر" onPress={() => router.push('/admin/requests')} />
           <ListItem icon="calendar-outline" color="#14B8A6" title="الحضور والانصراف" subtitle="حضور اليوم وآخر موقع مسجل لكل موظف" onPress={() => router.push('/admin/attendance')} />
           <ListItem icon="calendar-number-outline" color="#F59E0B" title="الإجازات والأذونات" subtitle="الموافقة على طلبات الموظفين أو رفضها" onPress={() => router.push('/admin/hr')} />
+          <ListItem icon="storefront-outline" color="#EC4899" title="إدارة المتجر" subtitle="إضافة المنتجات والأعمال التي تظهر للعملاء" onPress={() => router.push('/admin/store')} />
           <ListItem icon="people-outline" color="#7C5CFF" title="الموظفون" subtitle="إضافة الموظفين ببريدهم وتحديد صلاحياتهم" onPress={() => router.push('/admin/employees')} />
           <ListItem icon="navigate-circle-outline" color="#3B82F6" title="مواقع العمل" subtitle="المواقع التي يُسمح بتسجيل الحضور منها" onPress={() => router.push('/admin/sites')} />
         </Screen>

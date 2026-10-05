@@ -73,6 +73,14 @@ export interface HrRequest {
   createdAt: Timestamp | null;
 }
 
+export interface Product {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
+  imageUrl?: string;
+}
+
 export interface WorkSite {
   id: string;
   name: string;

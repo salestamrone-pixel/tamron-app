@@ -8,12 +8,12 @@ import { SERVICES } from '@/constants/services';
 import { useAuth } from '@/context/AuthContext';
 
 export default function RequestScreen() {
-  const { serviceId } = useLocalSearchParams<{ serviceId?: string }>();
+  const { serviceId, product } = useLocalSearchParams<{ serviceId?: string; product?: string }>();
   const service = SERVICES.find((s) => s.id === serviceId) ?? SERVICES[SERVICES.length - 1];
   const { user } = useAuth();
   const router = useRouter();
 
-  const [details, setDetails] = useState('');
+  const [details, setDetails] = useState(product ? `أرغب بطلب: ${product}` : '');
   const [dimensions, setDimensions] = useState('');
   const [quantity, setQuantity] = useState('');
   const [location, setLocation] = useState('');

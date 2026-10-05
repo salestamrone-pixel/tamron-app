@@ -8,9 +8,10 @@ import {
 import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { I18nManager } from 'react-native';
 
+import { Intro } from '@/components/intro';
 import { headerOptions } from '@/components/kit';
 import { AuthProvider } from '@/context/AuthContext';
 import '@/lib/tracking';
@@ -28,6 +29,8 @@ export default function RootLayout() {
     Tajawal_800ExtraBold,
   });
   const ready = fontsLoaded || fontError !== null;
+  const [introDone, setIntroDone] = useState(false);
+  const finishIntro = useCallback(() => setIntroDone(true), []);
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
@@ -42,6 +45,7 @@ export default function RootLayout() {
         <Stack screenOptions={{ ...headerOptions, headerBackTitle: 'رجوع' }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
+        {!introDone ? <Intro onDone={finishIntro} /> : null}
       </ThemeProvider>
     </AuthProvider>
   );
