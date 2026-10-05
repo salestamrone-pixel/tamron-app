@@ -2,19 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, {
-  FadeInDown,
-  FadeOut,
-  LinearTransition,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
-  withSpring,
-  withTiming,
-  ZoomIn,
-} from 'react-native-reanimated';
 
 import { font, Icon, IconName, palette } from '@/components/kit';
 
@@ -56,21 +43,10 @@ function Squircle({ icon, color, size, active }: { icon: IconName; color: string
   );
 }
 
-function Orb({ item, active, index, onPress }: { item: MainItem; active: boolean; index: number; onPress: () => void }) {
-  const y = useSharedValue(0);
-  const s = useSharedValue(1);
-  useEffect(() => {
-    y.value = withDelay(index * 250, withRepeat(withSequence(withTiming(-5, { duration: 1300 }), withTiming(0, { duration: 1300 })), -1));
-  }, [index, y]);
-  useEffect(() => {
-    s.value = withSpring(active ? 1.12 : 1, { damping: 8 });
-  }, [active, s]);
-  const style = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }, { scale: s.value }] }));
+function Orb({ item, active, onPress }: { item: MainItem; active: boolean; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={styles.orbWrap}>
-      <Animated.View style={style}>
-        <Squircle icon={item.icon} color={item.color} size={62} active={active} />
-      </Animated.View>
+      <Squircle icon={item.icon} color={item.color} size={62} active={active} />
       <Text style={[styles.orbLabel, active && { color: palette.goldLight }]}>{item.label}</Text>
     </Pressable>
   );
@@ -80,29 +56,29 @@ export function MainMenu({ items }: { items: MainItem[] }) {
   const [open, setOpen] = useState<string | null>(null);
   const current = items.find((i) => i.key === open);
   return (
-    <Animated.View layout={LinearTransition.springify()} style={styles.menu}>
+    <View style={styles.menu}>
       <View style={styles.orbRow}>
-        {items.map((item, i) => (
-          <Orb key={item.key} item={item} index={i} active={open === item.key} onPress={() => (item.onPress ? item.onPress() : setOpen(open === item.key ? null : item.key))} />
+        {items.map((item) => (
+          <Orb key={item.key} item={item} active={open === item.key} onPress={() => (item.onPress ? item.onPress() : setOpen(open === item.key ? null : item.key))} />
         ))}
       </View>
       {current ? (
-        <Animated.View key={current.key} entering={FadeInDown.springify()} exiting={FadeOut.duration(120)} style={styles.subPanel}>
+        <View key={current.key} style={styles.subPanel}>
           <View style={styles.subGrid}>
-            {current.subs.map((sub, i) => (
-              <Animated.View key={sub.key} entering={ZoomIn.delay(i * 45).springify().damping(11)}>
+            {current.subs.map((sub) => (
+              <View key={sub.key}>
                 <Pressable onPress={sub.onPress} style={({ pressed }) => [styles.sub, pressed && { opacity: 0.7 }]}>
                   <Squircle icon={sub.icon} color={sub.color} size={50} />
                   <Text style={styles.subLabel} numberOfLines={2}>
                     {sub.label}
                   </Text>
                 </Pressable>
-              </Animated.View>
+              </View>
             ))}
           </View>
-        </Animated.View>
+        </View>
       ) : null}
-    </Animated.View>
+    </View>
   );
 }
 

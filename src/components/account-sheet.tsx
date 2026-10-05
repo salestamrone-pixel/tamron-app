@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { font, Icon, IconName, palette } from '@/components/kit';
@@ -55,10 +54,10 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
   }
 
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
-      <Animated.View entering={FadeIn.duration(150)} style={styles.backdrop}>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
+      <View style={styles.backdrop}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-        <Animated.View entering={SlideInDown.springify().damping(18)} style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
+        <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
           <View style={styles.handle} />
           <View style={styles.head}>
             <View style={styles.avatar}>
@@ -77,8 +76,8 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
               <Text style={[styles.rowLabel, r.danger && { color: palette.danger }]}>{r.label}</Text>
             </Pressable>
           ))}
-        </Animated.View>
-      </Animated.View>
+        </View>
+      </View>
     </Modal>
   );
 }
