@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 
-import { ListItem, Muted, Screen } from '@/components/kit';
+import { Grid, Muted, Screen, Tile } from '@/components/kit';
 import { SERVICES } from '@/constants/services';
 
 export default function ServicesScreen() {
@@ -8,16 +8,17 @@ export default function ServicesScreen() {
   return (
     <Screen>
       <Muted>اختر الخدمة لإرسال طلب عرض سعر.</Muted>
-      {SERVICES.map((service) => (
-        <ListItem
-          key={service.id}
-          icon={service.icon}
-          color={service.color}
-          title={service.name}
-          subtitle={service.description}
-          onPress={() => router.push({ pathname: '/request', params: { serviceId: service.id } })}
-        />
-      ))}
+      <Grid>
+        {SERVICES.map((service) => (
+          <Tile
+            key={service.id}
+            icon={service.icon}
+            color={service.color}
+            title={service.name}
+            onPress={() => router.push({ pathname: '/request', params: { serviceId: service.id } })}
+          />
+        ))}
+      </Grid>
     </Screen>
   );
 }

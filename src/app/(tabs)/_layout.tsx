@@ -1,9 +1,12 @@
 import { Tabs } from 'expo-router/js-tabs';
-import { useState } from 'react';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { ColorValue, StyleSheet, View } from 'react-native';
 
 import { AccountSheet } from '@/components/account-sheet';
 import { font, headerOptions, Icon, IconName, palette } from '@/components/kit';
+import { db } from '@/config/firebase';
+import { useAuth } from '@/context/AuthContext';
 
 // Facebook/WhatsApp-style tab: a soft pill sits behind the active icon, which switches to its filled glyph.
 function tabIcon(name: IconName, focusedName: IconName) {
@@ -18,6 +21,22 @@ function tabIcon(name: IconName, focusedName: IconName) {
 
 export default function TabsLayout() {
   const [accountOpen, setAccountOpen] = useState(false);
+  const { user } = useAuth();
+  const [waiting, setWaiting] = useState(0);
+
+  // Customers see a badge on "طلباتي" when the company has replied with a price.
+  useEffect(() => {
+    if (!user) {
+      setWaiting(0);
+      return;
+    }
+    const q = query(collection(db, 'quoteRequests'), where('userId', '==', user.uid));
+    return onSnapshot(
+      q,
+      (snap) => setWaiting(snap.docs.filter((d) => d.data().status === 'quoted').length),
+      () => setWaiting(0),
+    );
+  }, [user]);
   return (
     <>
       <Tabs
@@ -46,7 +65,12 @@ export default function TabsLayout() {
             },
           }}
         />
-        <Tabs.Screen name="orders" options={{ title: 'طلباتي', tabBarIcon: tabIcon('document-text-outline', 'document-text') }} />
+        <Tabs.Screen name="orders" options={{
+            title: 'طلباتي',
+            tabBarIcon: tabIcon('document-text-outline', 'document-text'),
+            tabBarBadge: waiting > 0 ? waiting : undefined,
+            tabBarBadgeStyle: { backgroundColor: palette.danger, color: '#fff', fontFamily: font.bold },
+          }} />
         <Tabs.Screen name="(home)" options={{ title: 'الرئيسية', headerShown: false, tabBarIcon: tabIcon('home-outline', 'home') }} />
       </Tabs>
       <AccountSheet visible={accountOpen} onClose={() => setAccountOpen(false)} />
