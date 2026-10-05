@@ -47,10 +47,10 @@ function solidIcon(name: IconName): IconName {
 function Squircle({ icon, color, size, active }: { icon: IconName; color: string; size: number; active?: boolean }) {
   return (
     <LinearGradient
-      colors={[color + 'B3', color + '33']}
+      colors={[color, color + 'CC']}
       start={{ x: 0.1, y: 0 }}
       end={{ x: 0.9, y: 1 }}
-      style={[styles.squircle, { width: size, height: size, borderRadius: size * 0.32, borderColor: active ? palette.goldLight : 'rgba(255,255,255,0.4)' }]}>
+      style={[styles.squircle, { width: size, height: size, borderRadius: size * 0.3, borderColor: active ? palette.goldLight : 'transparent', borderWidth: active ? 2 : 0, boxShadow: '0 6px 14px rgba(0,0,0,0.35)' }]}>
       <Icon name={solidIcon(icon)} size={size * 0.46} color="#fff" />
     </LinearGradient>
   );

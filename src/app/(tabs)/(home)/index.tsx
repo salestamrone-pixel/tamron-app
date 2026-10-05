@@ -112,7 +112,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#1A0D03' },
-  content: { padding: 18, gap: 16, paddingBottom: 130, width: '100%', maxWidth: 720, alignSelf: 'center' },
+  content: { padding: 18, gap: 16, paddingBottom: 28, width: '100%', maxWidth: 720, alignSelf: 'center' },
   header: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
   title: { color: '#fff', fontSize: 20, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
   subtitle: { color: '#EFE6CC', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
