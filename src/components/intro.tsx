@@ -55,7 +55,8 @@ export function Intro({ onDone }: { onDone: () => void }) {
             </Animated.Text>
           ))}
         </View>
-        <Animated.View style={[styles.info, { opacity: info }]}>
+      </View>
+      <Animated.View style={[styles.info, { opacity: info }]}>
           <View style={styles.infoCol}>
             <Text style={styles.infoLabel}>الرقم الضريبي</Text>
             <Text style={styles.infoValue}>311524490100003</Text>
@@ -64,8 +65,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
             <Text style={styles.infoLabel}>السجل التجاري</Text>
             <Text style={styles.infoValue}>1010853768</Text>
           </View>
-        </Animated.View>
-      </View>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
   logo: { width: 190, height: 190 },
   words: { flexDirection: 'row-reverse', flexWrap: 'wrap', justifyContent: 'center', gap: 10, minHeight: 44 },
   word: { fontSize: 28, fontFamily: font.black, color: palette.goldLight },
-  info: { alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
-  infoCol: { alignItems: 'center', gap: 4 },
-  infoLabel: { fontSize: 12, fontFamily: font.medium, color: '#BDB59D' },
-  infoValue: { fontSize: 15, fontFamily: font.bold, color: '#fff', letterSpacing: 1 },
+  info: { position: 'absolute', left: 18, right: 18, bottom: 28, flexDirection: 'row', justifyContent: 'space-between' },
+  infoCol: { alignItems: 'center', gap: 2 },
+  infoLabel: { fontSize: 9, fontFamily: font.medium, color: '#BDB59D' },
+  infoValue: { fontSize: 11, fontFamily: font.bold, color: '#D9D2BC', letterSpacing: 0.5 },
 });
