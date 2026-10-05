@@ -59,6 +59,15 @@ export default function HomeScreen() {
   }
 
   items.push({
+    key: 'about',
+    label: 'من نحن',
+    icon: 'information-circle-outline',
+    color: '#A855F7',
+    subs: [],
+    onPress: go('/about'),
+  });
+
+  items.push({
     key: 'me',
     label: 'حسابي',
     icon: 'person-outline',
@@ -76,8 +85,8 @@ export default function HomeScreen() {
       <StatusBar style="light" />
       <Image source={require('@/assets/images/home-bg.jpg')} style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} resizeMode="cover" />
       <LinearGradient
-        colors={['rgba(5,8,22,0.45)', 'rgba(5,8,22,0)', 'rgba(5,8,22,0.15)', 'rgba(5,8,22,0.8)']}
-        locations={[0, 0.3, 0.55, 1]}
+        colors={['rgba(46,22,4,0.35)', 'rgba(255,170,70,0.05)', 'rgba(255,150,50,0.12)', 'rgba(38,16,3,0.78)']}
+        locations={[0, 0.3, 0.6, 1]}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
@@ -85,8 +94,8 @@ export default function HomeScreen() {
           <View style={styles.header}>
             <Logo size={52} />
             <View style={{ alignItems: 'flex-end' }}>
-              <Text style={styles.title}>{firstName ? `أهلاً ${firstName}` : 'تامرون العربية'}</Text>
-              <Text style={styles.subtitle}>دعاية وإعلان · لوحات وواجهات · ليزر و CNC</Text>
+              <Text style={styles.title}>شركة تامرون العربية المحدودة</Text>
+              <Text style={styles.subtitle}>{firstName ? `أهلاً ${firstName} · ` : ''}دعاية وإعلان · لوحات وواجهات · ليزر و CNC</Text>
             </View>
           </View>
           <View style={styles.spacer} />
@@ -102,10 +111,10 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#050816' },
+  root: { flex: 1, backgroundColor: '#1A0D03' },
   content: { padding: 18, gap: 16, paddingBottom: 130, width: '100%', maxWidth: 720, alignSelf: 'center' },
   header: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
-  title: { color: '#fff', fontSize: 24, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
+  title: { color: '#fff', fontSize: 20, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
   subtitle: { color: '#EFE6CC', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
   spacer: { height: 340 },
   cta: {
@@ -115,9 +124,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 54,
     borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.16)',
+    backgroundColor: 'rgba(255,196,100,0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.4)',
+    borderColor: 'rgba(255,220,150,0.55)',
   },
   ctaText: { color: '#fff', fontSize: 16, fontFamily: font.bold },
 });
