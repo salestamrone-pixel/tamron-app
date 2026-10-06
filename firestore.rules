@@ -14,19 +14,24 @@ service cloud.firestore {
     function isStaff() {
       return verified() && exists(staffPath()) && get(staffPath()).data.active == true;
     }
+    // The company owner: always an administrator, can never be removed or demoted by anyone.
+    function isOwner() {
+      return verified() && email() == 'omarhussein271@gmail.com';
+    }
     function isAdmin() {
-      return isStaff() && get(staffPath()).data.role == 'admin';
+      return isOwner() || (isStaff() && get(staffPath()).data.role == 'admin');
     }
     function isManager() {
-      return isStaff() && get(staffPath()).data.role in ['admin', 'hr'];
+      return isOwner() || (isStaff() && get(staffPath()).data.role in ['admin', 'hr']);
     }
 
     // Employee registry. Only admins change it; an employee can read their own entry.
     match /staff/{mail} {
       allow read: if isManager() || (verified() && email() == mail);
-      allow create, delete: if isAdmin();
-      // HR may edit profile data but never change roles or activation.
-      allow update: if isAdmin() || (isManager()
+      allow create: if isAdmin();
+      allow delete: if isAdmin() && mail != 'omarhussein271@gmail.com';
+      // Only the owner may touch the owner's entry. HR may edit other profiles but never roles or activation.
+      allow update: if isOwner() || (isAdmin() && mail != 'omarhussein271@gmail.com') || (isManager() && mail != 'omarhussein271@gmail.com'
         && request.resource.data.role == resource.data.role
         && request.resource.data.active == resource.data.active);
     }

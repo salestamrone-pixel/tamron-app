@@ -19,8 +19,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 async function loadStaff(firebaseUser: FirebaseUser): Promise<StaffMember | null> {
-  if (!firebaseUser.email || !firebaseUser.emailVerified) return null;
+  if (!firebaseUser.email) return null;
   try {
+    // A session saved before the email was verified keeps a stale flag: refresh it and the token.
+    if (!firebaseUser.emailVerified) {
+      await firebaseUser.reload();
+      if (!firebaseUser.emailVerified) return null;
+    }
+    await firebaseUser.getIdToken(true);
     const snap = await getDoc(doc(db, 'staff', firebaseUser.email.toLowerCase()));
     if (!snap.exists()) return null;
     const data = snap.data() as StaffMember;
