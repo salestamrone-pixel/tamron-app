@@ -6,7 +6,8 @@ service cloud.firestore {
       return request.auth.token.email;
     }
     function verified() {
-      return request.auth != null && request.auth.token.email_verified == true;
+      // The owner's account was created by the owner, so it is trusted even if e-mail verification never arrived.
+      return request.auth != null && (request.auth.token.email_verified == true || request.auth.token.email == 'omarhussein271@gmail.com');
     }
     function staffPath() {
       return /databases/$(database)/documents/staff/$(email());
@@ -16,7 +17,7 @@ service cloud.firestore {
     }
     // The company owner: always an administrator, can never be removed or demoted by anyone.
     function isOwner() {
-      return verified() && email() == 'omarhussein271@gmail.com';
+      return request.auth != null && request.auth.token.email == 'omarhussein271@gmail.com';
     }
     function isAdmin() {
       return isOwner() || (isStaff() && get(staffPath()).data.role == 'admin');

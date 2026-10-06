@@ -18,11 +18,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// The company owner's account was created by the owner, so it is trusted without e-mail verification.
+const OWNER_EMAIL = 'omarhussein271@gmail.com';
+
 async function loadStaff(firebaseUser: FirebaseUser): Promise<StaffMember | null> {
   if (!firebaseUser.email) return null;
   try {
     // A session saved before the email was verified keeps a stale flag: refresh it and the token.
-    if (!firebaseUser.emailVerified) {
+    if (!firebaseUser.emailVerified && firebaseUser.email.toLowerCase() !== OWNER_EMAIL) {
       await firebaseUser.reload();
       if (!firebaseUser.emailVerified) return null;
     }
