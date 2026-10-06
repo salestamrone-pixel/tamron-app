@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
 import { Badge, Button, Card, Empty, Loading, Muted, palette, Row, Screen, Title } from '@/components/kit';
+import { LiveMap } from '@/components/live-map';
 import { StaffGate } from '@/components/staff-gate';
 import { db } from '@/config/firebase';
 import { mapsUrl, todayKey } from '@/lib/geo';
@@ -53,6 +54,18 @@ function Track({ email, name }: { email: string; name: string }) {
         </Row>
       </Card>
 
+      {points && points.length > 0 ? (
+        <LiveMap
+          height={300}
+          data={{
+            route: [...points].reverse().map((p) => ({ lat: p.lat, lng: p.lng })),
+            markers: [
+              { lat: points[points.length - 1].lat, lng: points[points.length - 1].lng, color: '#16A34A', label: 'بداية اليوم' },
+              { lat: points[0].lat, lng: points[0].lng, color: '#DC2626', label: 'آخر موقع' },
+            ],
+          }}
+        />
+      ) : null}
       {points === null ? <Loading /> : null}
       {points?.length === 0 ? (
         <Empty icon="location-outline" title="لا توجد تحركات مسجلة" message="لم يُسجَّل أي موقع لهذا الموظف في هذا اليوم. قد يكون التتبع متوقفاً على هاتفه." />
