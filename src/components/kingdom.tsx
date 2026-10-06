@@ -22,8 +22,8 @@ export interface MainItem {
   onPress?: () => void;
 }
 
-const glass = 'rgba(255,236,200,0.1)';
-const glassBorder = 'rgba(255,225,170,0.3)';
+const glass = 'rgba(255,255,255,0.78)';
+const glassBorder = 'rgba(255,255,255,0.95)';
 
 // Solid glyph when the icon set has one: reads bolder over a photo.
 function solidIcon(name: IconName): IconName {
@@ -43,23 +43,14 @@ function Squircle({ icon, color, size }: { icon: IconName; color: string; size: 
   );
 }
 
-// Large, detailed tile: gradient body, gloss highlight, watermark glyph, icon disc, title and caption.
+// Frosted-glass tile: clean coloured icon badge, bold title, soft caption.
 function MegaTile({ item, active, onPress }: { item: MainItem; active: boolean; onPress: () => void }) {
-  const glyph = solidIcon(item.icon);
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.mega, active && styles.megaActive, pressed && { opacity: 0.88 }]}>
-      <LinearGradient colors={[item.color, item.color + 'D9']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.3)']} style={StyleSheet.absoluteFill} />
-      <View style={styles.watermark}>
-        <Icon name={glyph} size={120} color="rgba(255,255,255,0.17)" />
-      </View>
-      <LinearGradient colors={['rgba(255,255,255,0.32)', 'rgba(255,255,255,0)']} style={styles.gloss} />
-      <View style={styles.disc}>
-        <Icon name={glyph} size={32} color="#fff" />
-      </View>
-      <View style={{ alignItems: 'flex-end' }}>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.mega, active && styles.megaActive, pressed && { opacity: 0.85 }]}>
+      <Squircle icon={item.icon} color={item.color} size={64} />
+      <View style={{ alignItems: 'flex-end', gap: 2 }}>
         <Text style={styles.megaTitle}>{item.label}</Text>
-        {item.subtitle ? <Text style={styles.megaSub}>{item.subtitle}</Text> : null}
+        {item.subtitle ? <Text style={styles.megaSub} numberOfLines={1}>{item.subtitle}</Text> : null}
       </View>
     </Pressable>
   );
@@ -104,23 +95,22 @@ const styles = StyleSheet.create({
   mega: {
     flexGrow: 1,
     flexBasis: '46%',
-    minHeight: 132,
-    borderRadius: 28,
+    minHeight: 136,
+    borderRadius: 26,
     padding: 14,
-    overflow: 'hidden',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    boxShadow: '0 10px 22px rgba(0,0,0,0.35)',
+    backgroundColor: glass,
+    borderWidth: 1.5,
+    borderColor: glassBorder,
+    boxShadow: '0 10px 24px rgba(8,30,70,0.28)',
   },
-  megaActive: { borderWidth: 2, borderColor: palette.goldLight },
-  watermark: { position: 'absolute', left: -22, bottom: -26 },
-  gloss: { position: 'absolute', top: 0, left: 0, right: 0, height: 54 },
-  disc: { width: 58, height: 58, borderRadius: 29, backgroundColor: 'rgba(255,255,255,0.22)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.45)', alignItems: 'center', justifyContent: 'center' },
-  megaTitle: { fontSize: 18, fontFamily: font.black, color: '#fff', textShadowColor: 'rgba(0,0,0,0.35)', textShadowRadius: 4 },
-  megaSub: { fontSize: 11, fontFamily: font.medium, color: 'rgba(255,255,255,0.85)', marginTop: 1 },
+  megaActive: { borderColor: palette.gold, backgroundColor: 'rgba(255,255,255,0.92)' },
+  megaTitle: { fontSize: 18, fontFamily: font.black, color: '#0B1B33' },
+  megaSub: { fontSize: 11, fontFamily: font.medium, color: '#4B5B73' },
   squircle: { alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(0,0,0,0.35)' },
   subPanel: { backgroundColor: glass, borderColor: glassBorder, borderWidth: 1, borderRadius: 26, padding: 14 },
   subGrid: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-start' },
   sub: { width: 72, alignItems: 'center', gap: 6, paddingVertical: 6 },
-  subLabel: { fontSize: 11, fontFamily: font.bold, color: '#fff', textAlign: 'center', lineHeight: 15, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 4 },
+  subLabel: { fontSize: 11, fontFamily: font.bold, color: '#0B1B33', textAlign: 'center', lineHeight: 15 },
 });

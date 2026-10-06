@@ -111,8 +111,8 @@ export default function HomeScreen() {
       <StatusBar style="light" />
       <Image source={require('@/assets/images/home-bg.jpg')} style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} resizeMode="cover" />
       <LinearGradient
-        colors={['rgba(46,22,4,0.35)', 'rgba(255,170,70,0.05)', 'rgba(255,150,50,0.12)', 'rgba(38,16,3,0.78)']}
-        locations={[0, 0.3, 0.6, 1]}
+        colors={['rgba(5,22,55,0.55)', 'rgba(5,22,55,0)', 'rgba(5,22,55,0.1)', 'rgba(5,22,55,0.55)']}
+        locations={[0, 0.25, 0.6, 1]}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
@@ -140,11 +140,11 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#1A0D03' },
+  root: { flex: 1, backgroundColor: '#0B1B33' },
   content: { padding: 18, gap: 16, paddingBottom: 28, width: '100%', maxWidth: 720, alignSelf: 'center' },
   header: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
   title: { color: '#fff', fontSize: 20, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
-  subtitle: { color: '#EFE6CC', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
+  subtitle: { color: '#F3F7FF', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
   spacer: { height: 220 },
   cta: {
     flexDirection: 'row',
@@ -153,9 +153,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 54,
     borderRadius: 999,
-    backgroundColor: 'rgba(255,196,100,0.2)',
+    backgroundColor: 'rgba(11,27,51,0.55)',
     borderWidth: 1,
-    borderColor: 'rgba(255,220,150,0.55)',
+    borderColor: 'rgba(255,255,255,0.7)',
   },
   ctaText: { color: '#fff', fontSize: 16, fontFamily: font.bold },
 });
