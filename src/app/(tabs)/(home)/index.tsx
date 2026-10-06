@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -6,11 +7,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { font, Icon, Logo } from '@/components/kit';
 import { MainItem, MainMenu } from '@/components/kingdom';
+import { SideMenu } from '@/components/side-menu';
 import { SERVICES } from '@/constants/services';
 import { useAuth } from '@/context/AuthContext';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, isStaff, isAdmin } = useAuth();
   const go = (path: string) => () => router.push(path as never);
   const firstName = user?.displayName?.split(' ')[0];
@@ -106,7 +109,12 @@ export default function HomeScreen() {
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
-            <Logo size={52} />
+            <Pressable onPress={() => setMenuOpen(true)} hitSlop={10}>
+              <Logo size={52} />
+              <View style={styles.menuBadge}>
+                <Icon name="menu" size={12} color="#0A0A0A" />
+              </View>
+            </Pressable>
             <View style={{ alignItems: 'flex-end' }}>
               <Text style={styles.title}>شركة تامرون العربية المحدودة</Text>
               <Text style={styles.subtitle}>{firstName ? `أهلاً ${firstName} · ` : ''}دعاية وإعلان · لوحات وواجهات · ليزر و CNC</Text>
@@ -120,6 +128,7 @@ export default function HomeScreen() {
           </Pressable>
         </ScrollView>
       </SafeAreaView>
+      <SideMenu visible={menuOpen} onClose={() => setMenuOpen(false)} items={items} />
     </View>
   );
 }
@@ -127,6 +136,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#1A0D03' },
   content: { padding: 18, gap: 16, paddingBottom: 28, width: '100%', maxWidth: 720, alignSelf: 'center' },
+  menuBadge: { position: 'absolute', right: -4, bottom: -4, width: 20, height: 20, borderRadius: 10, backgroundColor: '#EDD85D', alignItems: 'center', justifyContent: 'center' },
   header: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
   title: { color: '#fff', fontSize: 20, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
   subtitle: { color: '#EFE6CC', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
