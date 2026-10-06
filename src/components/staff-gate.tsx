@@ -6,8 +6,8 @@ import { Button, Empty, Loading, Muted } from '@/components/kit';
 import { auth } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 
-export function StaffGate({ adminOnly = false, children }: { adminOnly?: boolean; children: React.ReactNode }) {
-  const { user, isStaff, isAdmin, loading, refresh } = useAuth();
+export function StaffGate({ adminOnly = false, manager = false, children }: { adminOnly?: boolean; manager?: boolean; children: React.ReactNode }) {
+  const { user, isStaff, isAdmin, isManager, loading, refresh } = useAuth();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState('');
@@ -50,12 +50,12 @@ export function StaffGate({ adminOnly = false, children }: { adminOnly?: boolean
     );
   }
 
-  if (!isStaff || (adminOnly && !isAdmin)) {
+  if (!isStaff || (adminOnly && !isAdmin) || (manager && !isManager)) {
     return (
       <Empty
         icon="shield-outline"
         title="غير مصرح"
-        message={adminOnly ? 'هذه الصفحة لإدارة الشركة فقط.' : 'هذا القسم لموظفي الشركة فقط. إذا كنت موظفاً فاطلب من الإدارة إضافة بريدك.'}
+        message={adminOnly || manager ? 'هذه الصفحة لإدارة الشركة والموارد البشرية فقط.' : 'هذا القسم لموظفي الشركة فقط. إذا كنت موظفاً فاطلب من الإدارة إضافة بريدك.'}
       />
     );
   }

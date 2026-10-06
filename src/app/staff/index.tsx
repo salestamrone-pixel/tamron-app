@@ -112,6 +112,10 @@ function Portal({ staff }: { staff: StaffMember }) {
 
       <ListItem icon="calendar-outline" color="#F59E0B" title="إجازاتي وأذوناتي" subtitle="تقديم طلب ومتابعة الرصيد والموافقات" onPress={() => router.push('/staff/requests')} />
 
+      <ListItem icon="cash-outline" color="#22C55E" title="قسيمة راتبي" subtitle="الراتب والخصومات الشهرية" onPress={() => router.push('/staff/payslip' as never)} />
+      <ListItem icon="checkbox-outline" color="#8B5CF6" title="مهامي" subtitle="أعمال التنفيذ المسندة إليك" onPress={() => router.push('/staff/tasks' as never)} />
+      <ListItem icon="document-text-outline" color="#3B82F6" title="مستنداتي" subtitle="شهادة راتب وخطاب تعريف PDF" onPress={() => router.push('/staff/documents' as never)} />
+
       <TrackingCard staff={staff} />
 
       {history.length > 0 ? <Title>السجل السابق</Title> : null}

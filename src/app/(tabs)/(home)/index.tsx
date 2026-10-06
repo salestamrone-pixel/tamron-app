@@ -14,7 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 export default function HomeScreen() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, isStaff, isAdmin } = useAuth();
+  const { user, isStaff, isAdmin, isManager } = useAuth();
   const go = (path: string) => () => router.push(path as never);
   const firstName = user?.displayName?.split(' ')[0];
 
@@ -55,20 +55,29 @@ export default function HomeScreen() {
     },
   ];
 
-  if (isStaff || isAdmin) {
+  if (isStaff || isManager) {
     const subs: MainItem['subs'] = [];
     if (isStaff) {
       subs.push({ key: 'staff', label: 'الحضور والانصراف', icon: 'location-outline', color: '#14B8A6', onPress: go('/staff') });
       subs.push({ key: 'leave', label: 'إجازاتي وأذوناتي', icon: 'calendar-outline', color: '#F59E0B', onPress: go('/staff/requests') });
+      subs.push({ key: 'payslip', label: 'قسيمة راتبي', icon: 'cash-outline', color: '#22C55E', onPress: go('/staff/payslip') });
+      subs.push({ key: 'mytasks', label: 'مهامي', icon: 'checkbox-outline', color: '#8B5CF6', onPress: go('/staff/tasks') });
+      subs.push({ key: 'docs', label: 'مستنداتي', icon: 'document-text-outline', color: '#3B82F6', onPress: go('/staff/documents') });
     }
-    if (isAdmin) {
+    if (isManager) {
       subs.push({ key: 'admin', label: 'لوحة الإدارة', icon: 'shield-checkmark-outline', color: '#7C5CFF', onPress: go('/admin') });
       subs.push({ key: 'att', label: 'سجل الحضور', icon: 'calendar-number-outline', color: '#22C55E', onPress: go('/admin/attendance') });
       subs.push({ key: 'hr', label: 'طلبات الإجازات', icon: 'documents-outline', color: '#F97316', onPress: go('/admin/hr') });
+      subs.push({ key: 'payroll', label: 'الرواتب', icon: 'cash-outline', color: '#16A34A', onPress: go('/admin/payroll') });
+      subs.push({ key: 'report', label: 'تقرير الحضور', icon: 'stats-chart-outline', color: '#06B6D4', onPress: go('/admin/report') });
+      subs.push({ key: 'tasks', label: 'مهام التنفيذ', icon: 'checkmark-done-outline', color: '#8B5CF6', onPress: go('/admin/tasks') });
+    }
+    if (isAdmin) {
       subs.push({ key: 'emp', label: 'الموظفون', icon: 'people-outline', color: '#06B6D4', onPress: go('/admin/employees') });
       subs.push({ key: 'sites', label: 'مواقع العمل', icon: 'navigate-circle-outline', color: '#3B82F6', onPress: go('/admin/sites') });
       subs.push({ key: 'shop', label: 'إدارة المتجر', icon: 'storefront-outline', color: '#EC4899', onPress: go('/admin/store') });
       subs.push({ key: 'quotes', label: 'طلبات العملاء', icon: 'chatbubbles-outline', color: '#FF6B4A', onPress: go('/admin/requests') });
+      subs.push({ key: 'audit', label: 'سجل العمليات', icon: 'shield-outline', color: '#475569', onPress: go('/admin/audit') });
     }
     items.push({ key: 'team', label: 'فريقنا', subtitle: 'للموظفين والإدارة', icon: 'people-outline', color: '#14B8A6', subs });
   }
@@ -110,10 +119,7 @@ export default function HomeScreen() {
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <Pressable onPress={() => setMenuOpen(true)} hitSlop={10}>
-              <Logo size={52} />
-              <View style={styles.menuBadge}>
-                <Icon name="menu" size={12} color="#0A0A0A" />
-              </View>
+              <Logo size={56} />
             </Pressable>
             <View style={{ alignItems: 'flex-end' }}>
               <Text style={styles.title}>شركة تامرون العربية المحدودة</Text>
@@ -136,7 +142,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#1A0D03' },
   content: { padding: 18, gap: 16, paddingBottom: 28, width: '100%', maxWidth: 720, alignSelf: 'center' },
-  menuBadge: { position: 'absolute', right: -4, bottom: -4, width: 20, height: 20, borderRadius: 10, backgroundColor: '#EDD85D', alignItems: 'center', justifyContent: 'center' },
   header: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
   title: { color: '#fff', fontSize: 20, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
   subtitle: { color: '#EFE6CC', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },

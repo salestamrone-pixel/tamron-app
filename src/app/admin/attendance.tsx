@@ -106,7 +106,7 @@ export default function AdminAttendance() {
   return (
     <>
       <Stack.Screen options={{ title: 'الحضور والانصراف' }} />
-      <StaffGate adminOnly>
+      <StaffGate manager>
         <Attendance />
       </StaffGate>
     </>

@@ -17,11 +17,18 @@ service cloud.firestore {
     function isAdmin() {
       return isStaff() && get(staffPath()).data.role == 'admin';
     }
+    function isManager() {
+      return isStaff() && get(staffPath()).data.role in ['admin', 'hr'];
+    }
 
     // Employee registry. Only admins change it; an employee can read their own entry.
     match /staff/{mail} {
-      allow read: if isAdmin() || (verified() && email() == mail);
-      allow write: if isAdmin();
+      allow read: if isManager() || (verified() && email() == mail);
+      allow create, delete: if isAdmin();
+      // HR may edit profile data but never change roles or activation.
+      allow update: if isAdmin() || (isManager()
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.active == resource.data.active);
     }
 
     // Customer quote requests.
@@ -54,19 +61,19 @@ service cloud.firestore {
     }
 
     match /attendance/{id} {
-      allow read: if isAdmin() || (isStaff() && resource.data.email == email());
+      allow read: if isManager() || (isStaff() && resource.data.email == email());
       allow create: if isStaff()
         && request.resource.data.email == email()
         && id == email() + '_' + request.resource.data.date;
       // An employee may only add their check-out; check-in fields stay as recorded.
-      allow update: if isAdmin() || (isStaff()
+      allow update: if isManager() || (isStaff()
         && resource.data.email == email()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['checkOut', 'checkOutLoc']));
       allow delete: if isAdmin();
     }
 
     match /locations/{mail} {
-      allow read: if isAdmin() || (isStaff() && email() == mail);
+      allow read: if isManager() || (isStaff() && email() == mail);
       allow write: if isStaff() && email() == mail;
 
       // Movement history: written by the employee's phone, read only by admins.
@@ -81,12 +88,35 @@ service cloud.firestore {
       allow create: if isStaff()
         && request.resource.data.email == email()
         && request.resource.data.status == 'pending';
-      allow read: if isAdmin() || (isStaff() && resource.data.email == email());
-      allow update: if isAdmin();
+      allow read: if isManager() || (isStaff() && resource.data.email == email());
+      allow update: if isManager();
+    }
+
+    match /advances/{id} {
+      allow read: if isManager() || (isStaff() && resource.data.email == email());
+      allow create, delete: if isManager();
+    }
+
+    match /settings/{id} {
+      allow read: if isStaff();
+      allow write: if isManager();
+    }
+
+    match /tasks/{id} {
+      allow read: if isManager() || (isStaff() && resource.data.assigneeEmail == email());
+      allow create, delete: if isManager();
+      allow update: if isManager() || (isStaff()
+        && resource.data.assigneeEmail == email()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'note', 'updatedAt']));
+    }
+
+    match /audit/{id} {
+      allow read: if isAdmin();
+      allow create: if isStaff() && request.resource.data.by == email();
     }
 
     match /consents/{mail} {
-      allow read: if isAdmin() || (isStaff() && email() == mail);
+      allow read: if isManager() || (isStaff() && email() == mail);
       allow write: if isStaff() && email() == mail;
     }
   }

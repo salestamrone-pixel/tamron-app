@@ -6,6 +6,7 @@ import { Badge, Button, Card, Dialog, Empty, Field, Loading, Muted, P, Row, Scre
 import { formatDate } from '@/components/quote-card';
 import { StaffGate } from '@/components/staff-gate';
 import { db } from '@/config/firebase';
+import { logAudit } from '@/lib/audit';
 import { HR_STATUS_LABELS, HR_TYPE_LABELS } from '@/constants/hr';
 import { HrRequest, HrRequestStatus } from '@/types';
 
@@ -38,6 +39,7 @@ function HrAdmin() {
         status: deciding.status,
         decisionNote: note.trim(),
       });
+      await logAudit(deciding.status === 'approved' ? 'قبول طلب' : 'رفض طلب', `${deciding.request.name} · ${deciding.request.from}`);
       setDeciding(null);
       setNote('');
     } finally {
@@ -87,7 +89,7 @@ export default function AdminHr() {
   return (
     <>
       <Stack.Screen options={{ title: 'الإجازات والأذونات' }} />
-      <StaffGate adminOnly>
+      <StaffGate manager>
         <HrAdmin />
       </StaffGate>
     </>

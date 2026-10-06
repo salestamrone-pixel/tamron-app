@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { collection, deleteDoc, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
@@ -10,6 +10,7 @@ import { StaffMember, StaffRole } from '@/types';
 
 function Employees() {
   const { user } = useAuth();
+  const router = useRouter();
   const [list, setList] = useState<StaffMember[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState<StaffMember | null>(null);
@@ -68,12 +69,13 @@ function Employees() {
         return (
           <Card key={member.email}>
             <Badge
-              label={!member.active ? 'موقوف' : member.role === 'admin' ? 'مدير' : 'موظف'}
+              label={!member.active ? 'موقوف' : member.role === 'admin' ? 'مدير' : member.role === 'hr' ? 'موارد بشرية' : 'موظف'}
               color={!member.active ? palette.muted : member.role === 'admin' ? palette.gold : palette.gold}
             />
             <Title>{member.name}</Title>
             <P>{member.email}</P>
             {member.jobTitle ? <Muted>{member.jobTitle}</Muted> : null}
+            <Button label="بيانات الموظف" variant="outline" icon="create-outline" onPress={() => router.push({ pathname: '/admin/employee', params: { email: member.email } })} />
             {!isSelf ? (
               <Row>
                 <Button
@@ -95,6 +97,7 @@ function Employees() {
         <Field label="المسمى الوظيفي" value={jobTitle} onChangeText={setJobTitle} />
         <Row>
           <Chip label="موظف" selected={role === 'employee'} onPress={() => setRole('employee')} />
+          <Chip label="موارد بشرية" selected={role === 'hr'} onPress={() => setRole('hr')} />
           <Chip label="مدير (صلاحيات كاملة)" selected={role === 'admin'} onPress={() => setRole('admin')} />
         </Row>
         <Button label="حفظ" onPress={add} loading={saving} />

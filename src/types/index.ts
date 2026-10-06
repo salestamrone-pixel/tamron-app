@@ -7,7 +7,7 @@ export interface User {
   emailVerified: boolean;
 }
 
-export type StaffRole = 'employee' | 'admin';
+export type StaffRole = 'employee' | 'hr' | 'admin';
 
 export interface StaffMember {
   email: string;
@@ -15,6 +15,37 @@ export interface StaffMember {
   jobTitle: string;
   role: StaffRole;
   active: boolean;
+  nationality?: 'saudi' | 'expat' | string;
+  idNumber?: string;
+  idExpiry?: string;
+  hireDate?: string;
+  contractEnd?: string;
+  salary?: number;
+  allowances?: number;
+  shiftStart?: string;
+  shiftEnd?: string;
+  graceMin?: number;
+}
+
+export interface Advance {
+  id: string;
+  email: string;
+  amount: number;
+  month: string;
+  note: string;
+}
+
+export type TaskStatus = 'todo' | 'doing' | 'done';
+
+export interface Task {
+  id: string;
+  title: string;
+  details: string;
+  assigneeEmail: string;
+  assigneeName: string;
+  status: TaskStatus;
+  note: string;
+  createdAt: Timestamp | null;
 }
 
 export interface Service {

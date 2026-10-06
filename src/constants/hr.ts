@@ -15,6 +15,12 @@ export const HR_STATUS_LABELS: Record<HrRequestStatus, { label: string; color: s
   rejected: { label: 'مرفوض', color: palette.danger },
 };
 
+export const TASK_STATUS: Record<'todo' | 'doing' | 'done', { label: string; color: string }> = {
+  todo: { label: 'جديدة', color: '#D97706' },
+  doing: { label: 'قيد التنفيذ', color: '#7C3AED' },
+  done: { label: 'منجزة', color: palette.success },
+};
+
 export const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export function daysBetween(from: string, to: string) {

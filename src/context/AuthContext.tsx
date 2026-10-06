@@ -10,6 +10,7 @@ interface AuthContextType {
   staff: StaffMember | null;
   isStaff: boolean;
   isAdmin: boolean;
+  isManager: boolean;
   loading: boolean;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -68,6 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         staff,
         isStaff: staff !== null,
         isAdmin: staff?.role === 'admin',
+        isManager: staff?.role === 'admin' || staff?.role === 'hr',
         loading,
         logout: () => signOut(auth),
         refresh,

@@ -7,6 +7,7 @@ import { Button, Chip, Dialog, Empty, ErrorText, Field, Loading, Muted, Row, Scr
 import { QuoteCard } from '@/components/quote-card';
 import { StaffGate } from '@/components/staff-gate';
 import { db } from '@/config/firebase';
+import { logAudit } from '@/lib/audit';
 import { STATUS_LABELS } from '@/constants/services';
 import { QuoteRequest, QuoteStatus } from '@/types';
 
@@ -46,6 +47,7 @@ function Requests() {
         status,
         reply: { price: price.trim(), note: note.trim(), repliedAt: serverTimestamp() },
       });
+      await logAudit('رد على طلب عميل', `${editing.serviceName} · ${price.trim()}`);
       setEditing(null);
     } catch {
       setError('تعذر حفظ الرد.');
