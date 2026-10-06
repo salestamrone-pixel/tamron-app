@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router/js-tabs';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { ColorValue, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AccountSheet } from '@/components/account-sheet';
 import { font, headerOptions, Icon, IconName, palette } from '@/components/kit';
@@ -21,6 +22,7 @@ function tabIcon(name: IconName, focusedName: IconName) {
 
 export default function TabsLayout() {
   const [accountOpen, setAccountOpen] = useState(false);
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [waiting, setWaiting] = useState(0);
 
@@ -53,6 +55,8 @@ export default function TabsLayout() {
             borderTopColor: palette.border,
             elevation: 12,
             paddingTop: 6,
+            height: 68 + insets.bottom,
+            paddingBottom: insets.bottom + 6,
           },
         }}>
         <Tabs.Screen

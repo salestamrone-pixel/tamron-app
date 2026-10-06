@@ -1,8 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { font, Icon, Logo } from '@/components/kit';
@@ -14,6 +14,11 @@ import { useAuth } from '@/context/AuthContext';
 export default function HomeScreen() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  // Opening the menu folds the company name into the logo; closing unfolds it again.
+  const fold = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(fold, { toValue: menuOpen ? 1 : 0, duration: 240, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [menuOpen, fold]);
   const { user, isStaff, isAdmin, isManager } = useAuth();
   const go = (path: string) => () => router.push(path as never);
   const firstName = user?.displayName?.split(' ')[0];
@@ -121,10 +126,16 @@ export default function HomeScreen() {
             <Pressable onPress={() => setMenuOpen(true)} hitSlop={10}>
               <Logo size={56} />
             </Pressable>
-            <View style={{ alignItems: 'flex-end' }}>
+            <Animated.View
+              style={{
+                alignItems: 'flex-end',
+                flex: 1,
+                opacity: fold.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+                transform: [{ translateX: fold.interpolate({ inputRange: [0, 1], outputRange: [0, 90] }) }, { scaleX: fold.interpolate({ inputRange: [0, 1], outputRange: [1, 0.6] }) }],
+              }}>
               <Text style={styles.title}>شركة تامرون العربية المحدودة</Text>
               <Text style={styles.subtitle}>{firstName ? `أهلاً ${firstName} · ` : ''}دعاية وإعلان · لوحات وواجهات · ليزر و CNC</Text>
-            </View>
+            </Animated.View>
           </View>
           <View style={styles.spacer} />
           <MainMenu items={items} />
@@ -157,5 +168,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.7)',
   },
-  ctaText: { color: '#fff', fontSize: 16, fontFamily: font.bold },
+  ctaText: { color: '#fff', fontSize: 16, fontFamily: font.bold, flexShrink: 0 },
 });
