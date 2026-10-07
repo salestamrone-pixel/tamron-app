@@ -65,7 +65,11 @@ jobs:
           # ABI (set in app.json) removes the need to also disable Gradle's parallelism,
           # which was making native C++ compilation of two architectures very slow.
           _JAVA_OPTIONS: -XX:MaxMetaspaceSize=1536m -Xmx3584m
-          GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1536m -Xmx3584m" -Dorg.gradle.daemon=false
+          # Four runs in a row got killed by GitHub with zero error output around the
+          # 23-31 minute mark — a brand-new free account running flat-out on both cores
+          # for that long looks like the signature of an anti-abuse CPU monitor, not a
+          # real failure. Capping workers so we never saturate 100% may avoid tripping it.
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1536m -Xmx3584m" -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2
         run: eas build --local -p android --profile preview --non-interactive --output "${{ github.workspace }}/tamron-app.apk"
 
       - name: Stop disk space monitor
