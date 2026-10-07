@@ -22,7 +22,7 @@ export function StaffGate({ adminOnly = false, manager = false, children }: { ad
     );
   }
 
-  if (!user.emailVerified) {
+  if (!user.emailVerified && !isStaff) {
     const resend = async () => {
       if (!auth.currentUser) return;
       setBusy(true);

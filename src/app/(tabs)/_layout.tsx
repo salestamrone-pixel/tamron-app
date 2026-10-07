@@ -5,6 +5,7 @@ import { ColorValue, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AccountSheet } from '@/components/account-sheet';
+import { SideMenu } from '@/components/side-menu';
 import { font, headerOptions, Icon, IconName, palette } from '@/components/kit';
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
@@ -42,6 +43,8 @@ export default function TabsLayout() {
   return (
     <>
       <Tabs
+        initialRouteName="(home)"
+        backBehavior="initialRoute"
         screenOptions={{
           ...headerOptions,
           tabBarActiveTintColor: palette.ink,
@@ -77,6 +80,7 @@ export default function TabsLayout() {
           }} />
         <Tabs.Screen name="(home)" options={{ title: 'الرئيسية', headerShown: false, tabBarIcon: tabIcon('home-outline', 'home') }} />
       </Tabs>
+      <SideMenu />
       <AccountSheet visible={accountOpen} onClose={() => setAccountOpen(false)} />
     </>
   );

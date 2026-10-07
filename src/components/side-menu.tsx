@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Animated, BackHandler, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { font, Icon, IconName, Logo } from '@/components/kit';
-import type { MainItem } from '@/components/kingdom';
 import { useAuth } from '@/context/AuthContext';
+import { closeMenu, isMenuOpen, menuProgress, openMenu } from '@/lib/menu-store';
+import { useMenuItems } from '@/lib/use-menu-items';
 
 function solid(name: IconName): IconName {
   const s = name.replace(/-outline$/, '') as IconName;
@@ -18,60 +19,86 @@ const line = '#2B2B2E';
 const textMain = '#F4F4F5';
 const textDim = '#A1A1AA';
 
-// Google-style account sheet: dark rounded cards. It slides out of the logo's corner (top right)
-// and the header card (logo + company name) unfolds a moment later.
-export function SideMenu({ visible, onClose, items }: { visible: boolean; onClose: () => void; items: MainItem[] }) {
+const clamp = (v: number) => Math.max(0, Math.min(1, v));
+
+// Google-style account sheet. It follows the finger when dragged from the right screen edge,
+// and the same drawer opens from the logo button.
+export function SideMenu() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const { user, staff } = useAuth();
+  const items = useMenuItems();
   const [open, setOpen] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const slide = useRef(new Animated.Value(0)).current;
-  const unfold = useRef(new Animated.Value(0)).current;
+  const [active, setActive] = useState(false);
   const panelWidth = Math.min(width * 0.92, 420);
 
   useEffect(() => {
-    if (visible) {
-      setMounted(true);
-      slide.setValue(0);
-      unfold.setValue(0);
-      Animated.sequence([
-        Animated.timing(slide, { toValue: 1, duration: 260, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-        Animated.timing(unfold, { toValue: 1, duration: 220, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      ]).start();
-    } else if (mounted) {
-      Animated.timing(slide, { toValue: 0, duration: 200, easing: Easing.in(Easing.cubic), useNativeDriver: true }).start(() => setMounted(false));
-    }
-  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
+    const id = menuProgress.addListener(({ value }) => setActive(value > 0.01));
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (isMenuOpen()) {
+        closeMenu();
+        return true;
+      }
+      return false;
+    });
+    return () => {
+      menuProgress.removeListener(id);
+      sub.remove();
+    };
+  }, []);
+
+  const settle = (vx: number, progress: number) => (vx > 0.4 ? closeMenu() : vx < -0.4 ? openMenu() : progress > 0.5 ? openMenu() : closeMenu());
+
+  // Edge strip: a swipe that starts at the right edge pulls the panel in with the finger.
+  const edge = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onPanResponderMove: (_, g) => menuProgress.setValue(clamp(-g.dx / panelWidth)),
+        onPanResponderRelease: (_, g) => settle(g.vx, clamp(-g.dx / panelWidth)),
+        onPanResponderTerminate: () => closeMenu(),
+      }),
+    [panelWidth],
+  );
+
+  // Drag the open panel to the right to close it.
+  const panel = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, g) => g.dx > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5,
+        onPanResponderMove: (_, g) => menuProgress.setValue(clamp(1 - g.dx / panelWidth)),
+        onPanResponderRelease: (_, g) => settle(g.vx, clamp(1 - g.dx / panelWidth)),
+        onPanResponderTerminate: () => openMenu(),
+      }),
+    [panelWidth],
+  );
 
   const run = (fn: () => void) => () => {
-    onClose();
+    closeMenu();
     fn();
   };
 
-  const translateX = slide.interpolate({ inputRange: [0, 1], outputRange: [panelWidth, 0] });
-  const scale = slide.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] });
-  const nameX = unfold.interpolate({ inputRange: [0, 1], outputRange: [60, 0] });
+  const translateX = menuProgress.interpolate({ inputRange: [0, 1], outputRange: [panelWidth, 0] });
+  const unfold = menuProgress.interpolate({ inputRange: [0.5, 1], outputRange: [0, 1], extrapolate: 'clamp' });
 
   return (
-    <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
-      <View style={styles.root}>
-        <Animated.View style={[styles.backdrop, { opacity: slide }]}>
-          <Pressable style={{ flex: 1 }} onPress={onClose} />
+    <>
+      {!active ? <View {...edge.panHandlers} style={[styles.edge, { top: insets.top + 60, bottom: insets.bottom + 90 }]} /> : null}
+      <View pointerEvents={active ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
+        <Animated.View style={[styles.backdrop, { opacity: menuProgress }]}>
+          <Pressable style={{ flex: 1 }} onPress={closeMenu} />
         </Animated.View>
         <Animated.View
-          style={[
-            styles.panel,
-            { width: panelWidth, paddingTop: insets.top + 8, paddingBottom: Math.max(insets.bottom, 12) + 8, transform: [{ translateX }, { scale }] },
-          ]}>
-          <Pressable onPress={onClose} hitSlop={12} style={styles.close}>
+          {...panel.panHandlers}
+          style={[styles.panel, { width: panelWidth, paddingTop: insets.top + 8, paddingBottom: Math.max(insets.bottom, 12) + 8, transform: [{ translateX }] }]}>
+          <Pressable onPress={closeMenu} hitSlop={12} style={styles.close}>
             <Icon name="close" size={28} color={textMain} />
           </Pressable>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 16 }}>
             <View style={styles.head}>
               <Logo size={58} />
-              <Animated.View style={{ flex: 1, alignItems: 'flex-end', opacity: unfold, transform: [{ translateX: nameX }] }}>
+              <Animated.View style={{ flex: 1, alignItems: 'flex-end', opacity: unfold }}>
                 <Text style={styles.company} numberOfLines={2}>شركة تامرون العربية المحدودة</Text>
                 <Text style={styles.who} numberOfLines={1}>
                   {user ? `${user.displayName || user.email}${staff?.jobTitle ? ' · ' + staff.jobTitle : ''}` : 'زائر'}
@@ -114,14 +141,14 @@ export function SideMenu({ visible, onClose, items }: { visible: boolean; onClos
           </ScrollView>
         </Animated.View>
       </View>
-    </Modal>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, flexDirection: 'row' },
+  edge: { position: 'absolute', right: 0, width: 22, zIndex: 20 },
   backdrop: { ...(StyleSheet.absoluteFill as object), backgroundColor: 'rgba(0,0,0,0.55)' },
-  panel: { marginLeft: 'auto', backgroundColor: sheet, borderTopLeftRadius: 32, borderBottomLeftRadius: 32, paddingHorizontal: 12 },
+  panel: { position: 'absolute', right: 0, top: 0, bottom: 0, backgroundColor: sheet, borderTopLeftRadius: 32, borderBottomLeftRadius: 32, paddingHorizontal: 12 },
   close: { alignSelf: 'flex-start', padding: 6, marginBottom: 8 },
   head: { flexDirection: 'row-reverse', alignItems: 'center', gap: 14, backgroundColor: card, borderRadius: 32, padding: 14 },
   company: { color: textMain, fontSize: 17, fontFamily: font.black, textAlign: 'right' },

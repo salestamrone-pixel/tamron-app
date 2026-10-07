@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { font, Icon, IconName, palette } from '@/components/kit';
+import { font, Icon, IconName } from '@/components/kit';
 
 export interface SubItem {
   key: string;
@@ -22,8 +22,8 @@ export interface MainItem {
   onPress?: () => void;
 }
 
-const glass = 'rgba(255,255,255,0.4)';
-const glassBorder = 'rgba(255,255,255,0.75)';
+const glass = 'rgba(255,255,255,0.2)';
+const glassBorder = 'rgba(255,255,255,0.7)';
 
 // Solid glyph when the icon set has one: reads bolder over a photo.
 function solidIcon(name: IconName): IconName {
@@ -44,9 +44,9 @@ function Squircle({ icon, color, size }: { icon: IconName; color: string; size: 
 }
 
 // Frosted-glass tile: clean coloured icon badge, bold title, soft caption.
-function MegaTile({ item, active, onPress }: { item: MainItem; active: boolean; onPress: () => void }) {
+function MegaTile({ item, onPress }: { item: MainItem; onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.mega, active && styles.megaActive, pressed && { opacity: 0.85 }]}>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.mega, pressed && { opacity: 0.8 }]}>
       <Squircle icon={item.icon} color={item.color} size={64} />
       <View style={{ alignItems: 'flex-end', gap: 2 }}>
         <Text style={styles.megaTitle}>{item.label}</Text>
@@ -56,41 +56,34 @@ function MegaTile({ item, active, onPress }: { item: MainItem; active: boolean; 
   );
 }
 
-export function MainMenu({ items }: { items: MainItem[] }) {
-  const [open, setOpen] = useState<string | null>(null);
-  const current = items.find((i) => i.key === open);
+// Tiles with sub-items open a page of their own (onOpenSection); the others go straight to their screen.
+export function MainMenu({ items, onOpenSection }: { items: MainItem[]; onOpenSection: (key: string) => void }) {
   return (
-    <View style={styles.menu}>
-      <View style={styles.grid}>
-        {items.map((item) => (
-          <MegaTile
-            key={item.key}
-            item={item}
-            active={open === item.key}
-            onPress={() => (item.onPress ? item.onPress() : setOpen(open === item.key ? null : item.key))}
-          />
-        ))}
-      </View>
-      {current ? (
-        <View key={current.key} style={styles.subPanel}>
-          <View style={styles.subGrid}>
-            {current.subs.map((sub) => (
-              <Pressable key={sub.key} onPress={sub.onPress} style={({ pressed }) => [styles.sub, pressed && { opacity: 0.7 }]}>
-                <Squircle icon={sub.icon} color={sub.color} size={58} />
-                <Text style={styles.subLabel} numberOfLines={2}>
-                  {sub.label}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      ) : null}
+    <View style={styles.grid}>
+      {items.map((item) => (
+        <MegaTile key={item.key} item={item} onPress={() => (item.subs.length > 0 ? onOpenSection(item.key) : item.onPress?.())} />
+      ))}
+    </View>
+  );
+}
+
+// The sub-icons of one section, shown on their own page.
+export function SubGrid({ subs }: { subs: SubItem[] }) {
+  return (
+    <View style={styles.subGrid}>
+      {subs.map((sub) => (
+        <Pressable key={sub.key} onPress={sub.onPress} style={({ pressed }) => [styles.sub, pressed && { opacity: 0.8 }]}>
+          <Squircle icon={sub.icon} color={sub.color} size={64} />
+          <Text style={styles.subLabel} numberOfLines={2}>
+            {sub.label}
+          </Text>
+        </Pressable>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  menu: { gap: 14 },
   grid: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 12 },
   mega: {
     flexGrow: 1,
@@ -103,14 +96,23 @@ const styles = StyleSheet.create({
     backgroundColor: glass,
     borderWidth: 1.5,
     borderColor: glassBorder,
-    boxShadow: '0 10px 24px rgba(8,30,70,0.22)',
+    boxShadow: '0 10px 24px rgba(8,30,70,0.18)',
   },
-  megaActive: { borderColor: palette.gold, backgroundColor: 'rgba(255,255,255,0.6)' },
-  megaTitle: { fontSize: 18, fontFamily: font.black, color: '#0B1B33' },
-  megaSub: { fontSize: 11, fontFamily: font.medium, color: '#4B5B73' },
-  squircle: { alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(0,0,0,0.35)' },
-  subPanel: { backgroundColor: glass, borderColor: glassBorder, borderWidth: 1, borderRadius: 26, padding: 14 },
-  subGrid: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-start' },
-  sub: { width: 72, alignItems: 'center', gap: 6, paddingVertical: 6 },
-  subLabel: { fontSize: 11, fontFamily: font.bold, color: '#0B1B33', textAlign: 'center', lineHeight: 15 },
+  megaTitle: { fontSize: 18, fontFamily: font.black, color: '#0B1B33', textShadowColor: 'rgba(255,255,255,0.9)', textShadowRadius: 6 },
+  megaSub: { fontSize: 11, fontFamily: font.bold, color: '#243653', textShadowColor: 'rgba(255,255,255,0.9)', textShadowRadius: 5 },
+  squircle: { alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(0,0,0,0.3)' },
+  subGrid: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 12 },
+  sub: {
+    flexBasis: '30%',
+    flexGrow: 1,
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 6,
+    borderRadius: 24,
+    backgroundColor: glass,
+    borderWidth: 1.5,
+    borderColor: glassBorder,
+  },
+  subLabel: { fontSize: 12, fontFamily: font.bold, color: '#0B1B33', textAlign: 'center', lineHeight: 17, textShadowColor: 'rgba(255,255,255,0.9)', textShadowRadius: 5 },
 });

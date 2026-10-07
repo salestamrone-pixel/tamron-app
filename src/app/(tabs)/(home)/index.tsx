@@ -1,151 +1,50 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { font, Icon, Logo } from '@/components/kit';
-import { MainItem, MainMenu } from '@/components/kingdom';
-import { SideMenu } from '@/components/side-menu';
-import { SERVICES } from '@/constants/services';
+import { MainMenu } from '@/components/kingdom';
 import { useAuth } from '@/context/AuthContext';
+import { openMenu } from '@/lib/menu-store';
+import { useMenuItems } from '@/lib/use-menu-items';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [menuOpen, setMenuOpen] = useState(false);
-  // Opening the menu folds the company name into the logo; closing unfolds it again.
-  const fold = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(fold, { toValue: menuOpen ? 1 : 0, duration: 240, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-  }, [menuOpen, fold]);
-  const { user, isStaff, isAdmin, isManager } = useAuth();
-  const go = (path: string) => () => router.push(path as never);
+  const { user } = useAuth();
+  const items = useMenuItems();
   const firstName = user?.displayName?.split(' ')[0];
-
-  const items: MainItem[] = [
-    {
-      key: 'services',
-      label: 'خدماتنا',
-      subtitle: `${SERVICES.length} خدمة`,
-      icon: 'grid-outline',
-      color: '#F59E0B',
-      subs: SERVICES.map((s) => ({
-        key: s.id,
-        label: s.name,
-        icon: s.icon,
-        color: s.color,
-        onPress: () => router.push({ pathname: '/request', params: { serviceId: s.id } }),
-      })),
-    },
-    {
-      key: 'store',
-      label: 'متجرنا',
-      subtitle: 'منتجاتنا وأعمالنا',
-      icon: 'storefront-outline',
-      color: '#EF4444',
-      subs: [],
-      onPress: go('/store'),
-    },
-    {
-      key: 'work',
-      label: 'أعمالنا',
-      subtitle: 'معرض وطلباتك',
-      icon: 'images-outline',
-      color: '#EC4899',
-      subs: [
-        { key: 'portfolio', label: 'معرض الأعمال', icon: 'images-outline', color: '#EC4899', onPress: go('/portfolio') },
-        { key: 'orders', label: 'طلباتي', icon: 'document-text-outline', color: '#3B82F6', onPress: go('/orders') },
-      ],
-    },
-  ];
-
-  if (isStaff || isManager) {
-    const subs: MainItem['subs'] = [];
-    if (isStaff) {
-      subs.push({ key: 'staff', label: 'الحضور والانصراف', icon: 'location-outline', color: '#14B8A6', onPress: go('/staff') });
-      subs.push({ key: 'leave', label: 'إجازاتي وأذوناتي', icon: 'calendar-outline', color: '#F59E0B', onPress: go('/staff/requests') });
-      subs.push({ key: 'payslip', label: 'قسيمة راتبي', icon: 'cash-outline', color: '#22C55E', onPress: go('/staff/payslip') });
-      subs.push({ key: 'mytasks', label: 'مهامي', icon: 'checkbox-outline', color: '#8B5CF6', onPress: go('/staff/tasks') });
-      subs.push({ key: 'docs', label: 'مستنداتي', icon: 'document-text-outline', color: '#3B82F6', onPress: go('/staff/documents') });
-    }
-    if (isManager) {
-      subs.push({ key: 'admin', label: 'لوحة الإدارة', icon: 'shield-checkmark-outline', color: '#7C5CFF', onPress: go('/admin') });
-      subs.push({ key: 'att', label: 'سجل الحضور', icon: 'calendar-number-outline', color: '#22C55E', onPress: go('/admin/attendance') });
-      subs.push({ key: 'hr', label: 'طلبات الإجازات', icon: 'documents-outline', color: '#F97316', onPress: go('/admin/hr') });
-      subs.push({ key: 'payroll', label: 'الرواتب', icon: 'cash-outline', color: '#16A34A', onPress: go('/admin/payroll') });
-      subs.push({ key: 'report', label: 'تقرير الحضور', icon: 'stats-chart-outline', color: '#06B6D4', onPress: go('/admin/report') });
-      subs.push({ key: 'tasks', label: 'مهام التنفيذ', icon: 'checkmark-done-outline', color: '#8B5CF6', onPress: go('/admin/tasks') });
-    }
-    if (isAdmin) {
-      subs.push({ key: 'emp', label: 'الموظفون', icon: 'people-outline', color: '#06B6D4', onPress: go('/admin/employees') });
-      subs.push({ key: 'sites', label: 'مواقع العمل', icon: 'navigate-circle-outline', color: '#3B82F6', onPress: go('/admin/sites') });
-      subs.push({ key: 'shop', label: 'إدارة المتجر', icon: 'storefront-outline', color: '#EC4899', onPress: go('/admin/store') });
-      subs.push({ key: 'quotes', label: 'طلبات العملاء', icon: 'chatbubbles-outline', color: '#FF6B4A', onPress: go('/admin/requests') });
-      subs.push({ key: 'audit', label: 'سجل العمليات', icon: 'shield-outline', color: '#475569', onPress: go('/admin/audit') });
-    }
-    items.push({ key: 'team', label: 'فريقنا', subtitle: 'للموظفين والإدارة', icon: 'people-outline', color: '#14B8A6', subs });
-  }
-
-  items.push({
-    key: 'about',
-    label: 'من نحن',
-    subtitle: 'تعرّف علينا',
-    icon: 'information-circle-outline',
-    color: '#A855F7',
-    subs: [],
-    onPress: go('/about'),
-  });
-
-  items.push({
-    key: 'me',
-    label: 'حسابي',
-    subtitle: 'ملفك وخياراتك',
-    icon: 'person-outline',
-    color: '#3B82F6',
-    subs: user
-      ? [{ key: 'profile', label: 'ملفي', icon: 'person-circle-outline', color: '#3B82F6', onPress: go('/profile') }]
-      : [
-          { key: 'login', label: 'تسجيل الدخول', icon: 'log-in-outline', color: '#3B82F6', onPress: go('/auth/login') },
-          { key: 'register', label: 'حساب جديد', icon: 'person-add-outline', color: '#22C55E', onPress: go('/auth/register') },
-        ],
-  });
 
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
       <Image source={require('@/assets/images/home-bg.jpg')} style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} resizeMode="cover" />
       <LinearGradient
-        colors={['rgba(5,22,55,0.55)', 'rgba(5,22,55,0)', 'rgba(5,22,55,0.1)', 'rgba(5,22,55,0.55)']}
+        colors={['rgba(5,22,55,0.45)', 'rgba(5,22,55,0)', 'rgba(5,22,55,0.05)', 'rgba(5,22,55,0.45)']}
         locations={[0, 0.25, 0.6, 1]}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
-            <Pressable onPress={() => setMenuOpen(true)} hitSlop={10}>
-              <Logo size={56} />
+            <Pressable onPress={openMenu} hitSlop={10} style={({ pressed }) => [styles.logoButton, pressed && { opacity: 0.8 }]}>
+              <Logo size={46} />
             </Pressable>
-            <Animated.View
-              style={{
-                alignItems: 'flex-end',
-                flex: 1,
-                opacity: fold.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
-                transform: [{ translateX: fold.interpolate({ inputRange: [0, 1], outputRange: [0, 90] }) }, { scaleX: fold.interpolate({ inputRange: [0, 1], outputRange: [1, 0.6] }) }],
-              }}>
-              <Text style={styles.title}>شركة تامرون العربية المحدودة</Text>
-              <Text style={styles.subtitle}>{firstName ? `أهلاً ${firstName} · ` : ''}دعاية وإعلان · لوحات وواجهات · ليزر و CNC</Text>
-            </Animated.View>
+            {firstName ? (
+              <View style={styles.hello}>
+                <Text style={styles.helloText}>أهلاً {firstName}</Text>
+              </View>
+            ) : null}
           </View>
           <View style={styles.spacer} />
-          <MainMenu items={items} />
+          <MainMenu items={items} onOpenSection={(key) => router.push({ pathname: '/section', params: { key } } as never)} />
           <Pressable onPress={() => router.push('/services')} style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}>
             <Text style={styles.ctaText}>اطلب عرض سعر</Text>
             <Icon name="arrow-back" size={20} color="#fff" />
           </Pressable>
         </ScrollView>
       </SafeAreaView>
-      <SideMenu visible={menuOpen} onClose={() => setMenuOpen(false)} items={items} />
     </View>
   );
 }
@@ -153,9 +52,20 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#0B1B33' },
   content: { padding: 18, gap: 16, paddingBottom: 28, width: '100%', maxWidth: 720, alignSelf: 'center' },
-  header: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
-  title: { color: '#fff', fontSize: 20, fontFamily: font.black, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
-  subtitle: { color: '#F3F7FF', fontSize: 12, fontFamily: font.medium, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 },
+  header: { flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'space-between' },
+  logoButton: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.85)',
+    boxShadow: '0 6px 16px rgba(0,0,0,0.35)',
+  },
+  hello: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: 'rgba(11,27,51,0.45)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)' },
+  helloText: { color: '#fff', fontSize: 13, fontFamily: font.bold },
   spacer: { height: 220 },
   cta: {
     flexDirection: 'row',
@@ -164,7 +74,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 54,
     borderRadius: 999,
-    backgroundColor: 'rgba(11,27,51,0.55)',
+    backgroundColor: 'rgba(11,27,51,0.45)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.7)',
   },
