@@ -30,6 +30,10 @@ jobs:
       - name: Build APK locally (uses GitHub's compute, not Expo's build queue)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          # The runner's default JVM metaspace is too small for this many native modules
+          # compiling at once; it was crash-looping with OutOfMemoryError: Metaspace.
+          _JAVA_OPTIONS: -XX:MaxMetaspaceSize=1536m -Xmx3584m
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1536m -Xmx3584m" -Dorg.gradle.daemon=false -Dorg.gradle.parallel=false
         run: eas build --local -p android --profile preview --non-interactive --output "${{ github.workspace }}/tamron-app.apk"
 
       - uses: actions/upload-artifact@v4
