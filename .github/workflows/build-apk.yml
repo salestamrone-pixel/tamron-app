@@ -1,0 +1,39 @@
+name: Build Android APK
+
+# Runs on GitHub's free servers instead of Expo's paid build queue.
+# Trigger it by hand from the Actions tab whenever a new APK is needed.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Build APK locally (uses GitHub's compute, not Expo's build queue)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --local -p android --profile preview --non-interactive --output "${{ github.workspace }}/tamron-app.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tamron-app-apk
+          path: tamron-app.apk
+          retention-days: 30
