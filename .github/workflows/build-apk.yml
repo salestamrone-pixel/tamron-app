@@ -9,6 +9,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # The runner ships with ~70GB of preinstalled tooling we never use (.NET, Haskell,
+      # Docker images, extra Android emulator images...). The Android build plus EAS's own
+      # temp copy of the project filled the remaining space and failed while copying the
+      # finished APK, so clear that junk first.
+      - name: Free up disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
