@@ -22,8 +22,8 @@ export interface MainItem {
   onPress?: () => void;
 }
 
-const glass = 'rgba(255,255,255,0.78)';
-const glassBorder = 'rgba(255,255,255,0.95)';
+const glass = 'rgba(255,255,255,0.4)';
+const glassBorder = 'rgba(255,255,255,0.75)';
 
 // Solid glyph when the icon set has one: reads bolder over a photo.
 function solidIcon(name: IconName): IconName {
@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
     backgroundColor: glass,
     borderWidth: 1.5,
     borderColor: glassBorder,
-    boxShadow: '0 10px 24px rgba(8,30,70,0.28)',
+    boxShadow: '0 10px 24px rgba(8,30,70,0.22)',
   },
-  megaActive: { borderColor: palette.gold, backgroundColor: 'rgba(255,255,255,0.92)' },
+  megaActive: { borderColor: palette.gold, backgroundColor: 'rgba(255,255,255,0.6)' },
   megaTitle: { fontSize: 18, fontFamily: font.black, color: '#0B1B33' },
   megaSub: { fontSize: 11, fontFamily: font.medium, color: '#4B5B73' },
   squircle: { alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 14px rgba(0,0,0,0.35)' },

@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { reauthWithGoogle } from '@/lib/google';
 
 export default function ProfileScreen() {
-  const { user, staff, isStaff, isAdmin, loading, logout } = useAuth();
+  const { user, staff, isStaff, isAdmin, loading, logout, staffStatus, refresh } = useAuth();
   const router = useRouter();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [password, setPassword] = useState('');
@@ -57,6 +57,8 @@ export default function ProfileScreen() {
         <Title>{user.displayName || 'مستخدم'}</Title>
         <P>{user.email}</P>
         {staff ? <Muted>{staff.jobTitle || 'موظف'} · {isAdmin ? 'مدير النظام' : 'موظف'}</Muted> : null}
+        {!staff && staffStatus ? <Muted>{staffStatus}</Muted> : null}
+        {!staff && staffStatus ? <Button label="إعادة فحص حسابي" variant="outline" onPress={refresh} /> : null}
       </Card>
 
       {isStaff ? (
