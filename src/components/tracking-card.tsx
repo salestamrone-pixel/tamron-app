@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { Badge, Button, Card, Dialog, ErrorText, Muted, P, palette, Title } from '@/components/kit';
 import { db } from '@/config/firebase';
+import { useAuth } from '@/context/AuthContext';
 import { disableTracking, enableTracking, isTrackingOn, syncGeofences, trackingSupported } from '@/lib/tracking';
 import { StaffMember, WorkSite } from '@/types';
 
@@ -12,6 +13,7 @@ async function loadSites() {
 }
 
 export function TrackingCard({ staff }: { staff: StaffMember }) {
+  const { isManager } = useAuth();
   const [on, setOn] = useState<boolean | null>(null);
   const [asking, setAsking] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -23,10 +25,22 @@ export function TrackingCard({ staff }: { staff: StaffMember }) {
     isTrackingOn()
       .then(async (active) => {
         setOn(active);
-        // Sites may have changed since tracking was switched on.
-        if (active) await syncGeofences(await loadSites());
+        if (active) {
+          // Sites may have changed since tracking was switched on.
+          await syncGeofences(await loadSites());
+        } else {
+          // Usually already turned on right after login (see auto-tracking.ts); this
+          // is a second, silent attempt in case that first one didn't go through.
+          try {
+            await enableTracking(profile, await loadSites());
+            setOn(true);
+          } catch {
+            // Needs an explicit tap — surfaced below via the retry button.
+          }
+        }
       })
       .catch(() => setOn(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!trackingSupported || on === null) return null;
@@ -61,13 +75,13 @@ export function TrackingCard({ staff }: { staff: StaffMember }) {
       <Title>الحضور التلقائي وتتبع الموقع</Title>
       <Muted>
         {on
-          ? 'يُسجَّل حضورك وانصرافك تلقائياً عند دخول موقع العمل والخروج منه، ويظهر موقعك للإدارة طوال الوقت.'
-          : 'فعّل التتبع ليُسجَّل حضورك تلقائياً بدون ضغط أي زر.'}
+          ? 'يُسجَّل حضورك وانصرافك تلقائياً عند دخول موقع العمل والخروج منه، بدون الحاجة لفتح التطبيق أو الضغط على أي زر.'
+          : 'يُفترض أن يكون هذا مفعّلاً تلقائياً. إذا ظهرت هذه الرسالة فلم تتم الموافقة على إذن الموقع بعد — اضغط الزر وامنح الإذن «طوال الوقت».'}
       </Muted>
       {on ? (
-        <Button label="إيقاف التتبع" variant="outline" onPress={stop} loading={busy} />
+        isManager ? <Button label="إيقاف التتبع" variant="outline" onPress={stop} loading={busy} /> : null
       ) : (
-        <Button label="تفعيل التتبع" icon="navigate-circle-outline" onPress={() => setAsking(true)} />
+        <Button label="تفعيل التتبع الآن" icon="navigate-circle-outline" onPress={() => setAsking(true)} />
       )}
 
       <Dialog visible={asking} icon="locate-outline" title="موافقة على تتبع الموقع" onClose={() => setAsking(false)}>
@@ -76,8 +90,8 @@ export function TrackingCard({ staff }: { staff: StaffMember }) {
           موقعك، وذلك طوال الوقت: أثناء الدوام وخارجه، وحتى عند إغلاق التطبيق أو عدم استخدامه.
         </P>
         <Muted>
-          تُحفظ المواقع في سجل تطّلع عليه إدارة الشركة فقط. سيظهر إشعار دائم على هاتفك ما دام التتبع يعمل، ويمكنك
-          إيقافه من هذه الصفحة في أي وقت.
+          تُحفظ المواقع في سجل تطّلع عليه إدارة الشركة فقط. سيظهر إشعار دائم على هاتفك ما دام التتبع يعمل
+          {isManager ? '، ويمكنك إيقافه من هذه الصفحة في أي وقت.' : '.'}
         </Muted>
         <ErrorText>{error}</ErrorText>
         <Button label="موافق، فعّل التتبع" onPress={accept} loading={busy} />

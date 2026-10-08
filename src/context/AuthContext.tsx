@@ -3,6 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { auth, db } from '@/config/firebase';
+import { autoEnableTracking } from '@/lib/auto-tracking';
 import { registerForPushNotifications } from '@/lib/push';
 import { recordUserProfile } from '@/lib/user-profile';
 import { StaffMember, User } from '@/types';
@@ -78,6 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
     registerForPushNotifications(firebaseUser.uid);
     recordUserProfile(firebaseUser, staffMember?.role ?? 'customer');
+    if (staffMember) autoEnableTracking({ email: staffMember.email, name: staffMember.name });
   }, []);
 
   useEffect(() => onAuthStateChanged(auth, apply), [apply]);
