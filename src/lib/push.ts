@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
+import { router } from 'expo-router';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
@@ -43,4 +44,20 @@ export async function registerForPushNotifications(uid: string) {
   } catch {
     // Push is a nice-to-have; a failure here must never block sign-in.
   }
+}
+
+function openFromNotification(data: Record<string, unknown> | undefined) {
+  if (data?.quoteId) router.push('/orders');
+}
+
+// Routes a tap on the notification (quote status/reply) to "طلباتي" — registered once
+// at app start, plus a one-time check for the tap that cold-launched the app.
+export function registerNotificationResponseHandler() {
+  Notifications.getLastNotificationResponseAsync().then((response) => {
+    if (response) openFromNotification(response.notification.request.content.data);
+  });
+  const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+    openFromNotification(response.notification.request.content.data);
+  });
+  return () => sub.remove();
 }

@@ -1,6 +1,7 @@
 const { onDocumentUpdated, onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { initializeApp } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
+const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 
 initializeApp();
 const db = getFirestore();
@@ -61,4 +62,23 @@ exports.sendBroadcast = onDocumentCreated('broadcasts/{id}', async (event) => {
   const tokens = (await db.collection('pushTokens').get()).docs.map((d) => d.data().token).filter(Boolean);
   if (tokens.length === 0) return;
   await sendExpoPush(tokens.map((to) => ({ to, title, body, sound: 'default' })));
+});
+
+// Once a day, nudges every admin who still has a quote request sitting unanswered
+// for more than 24 hours — easy to miss among other work, easy to lose a customer over.
+exports.remindStaleRequests = onSchedule('every 24 hours', async () => {
+  const since = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+  const staleSnap = await db.collection('quoteRequests').where('status', '==', 'new').where('createdAt', '<=', since).get();
+  if (staleSnap.empty) return;
+
+  const adminUids = (await db.collection('users').where('role', '==', 'admin').get()).docs.map((d) => d.id);
+  if (adminUids.length === 0) return;
+
+  const tokenDocs = await Promise.all(adminUids.map((uid) => db.doc(`pushTokens/${uid}`).get()));
+  const tokens = tokenDocs.map((d) => d.data()?.token).filter(Boolean);
+  if (tokens.length === 0) return;
+
+  const count = staleSnap.size;
+  const body = count === 1 ? 'يوجد طلب عميل واحد بانتظار الرد منذ أكثر من يوم.' : `يوجد ${count} طلبات عملاء بانتظار الرد منذ أكثر من يوم.`;
+  await sendExpoPush(tokens.map((to) => ({ to, title: 'طلبات بانتظار الرد', body, sound: 'default' })));
 });

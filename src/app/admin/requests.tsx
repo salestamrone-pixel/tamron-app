@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 
 import { Button, Chip, Dialog, Empty, ErrorText, Field, Loading, Muted, Row, Screen } from '@/components/kit';
@@ -15,6 +15,7 @@ const STATUSES = Object.keys(STATUS_LABELS) as QuoteStatus[];
 
 function Requests() {
   const [quotes, setQuotes] = useState<QuoteRequest[] | null>(null);
+  const [filter, setFilter] = useState<QuoteStatus | 'all'>('all');
   const [editing, setEditing] = useState<QuoteRequest | null>(null);
   const [price, setPrice] = useState('');
   const [note, setNote] = useState('');
@@ -30,6 +31,11 @@ function Requests() {
       () => setQuotes([]),
     );
   }, []);
+
+  const filtered = useMemo(() => {
+    if (!quotes) return quotes;
+    return filter === 'all' ? quotes : quotes.filter((q) => q.status === filter);
+  }, [quotes, filter]);
 
   const open = (quote: QuoteRequest) => {
     setEditing(quote);
@@ -61,7 +67,14 @@ function Requests() {
 
   return (
     <Screen>
-      {quotes.map((quote) => (
+      <Row>
+        <Chip label="الكل" selected={filter === 'all'} onPress={() => setFilter('all')} />
+        {STATUSES.map((s) => (
+          <Chip key={s} label={STATUS_LABELS[s].label} selected={filter === s} onPress={() => setFilter(s)} />
+        ))}
+      </Row>
+      {filtered && filtered.length === 0 ? <Empty icon="filter-outline" title="لا توجد طلبات بهذه الحالة" /> : null}
+      {filtered?.map((quote) => (
         <QuoteCard key={quote.id} quote={quote}>
           <Muted>العميل: {quote.userName || '—'} · {quote.userEmail}</Muted>
           <Row>

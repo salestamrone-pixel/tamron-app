@@ -15,6 +15,7 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp';
 import { Intro } from '@/components/intro';
 import { headerOptions } from '@/components/kit';
 import { AuthProvider } from '@/context/AuthContext';
+import { registerNotificationResponseHandler } from '@/lib/push';
 import { recordAppOpen } from '@/lib/visit-tracker';
 import '@/lib/tracking';
 
@@ -41,6 +42,8 @@ export default function RootLayout() {
   useEffect(() => {
     recordAppOpen();
   }, []);
+
+  useEffect(() => registerNotificationResponseHandler(), []);
 
   if (!ready) return null;
 

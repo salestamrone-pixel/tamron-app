@@ -10,5 +10,15 @@ service firebase.storage {
         && request.resource.size < 8 * 1024 * 1024
         && request.resource.contentType.matches('image/.*');
     }
+
+    // Product photos uploaded from the admin "إدارة المتجر" screen. Public read, since
+    // the store page itself is open to anyone; write stays scoped to the uploader's own
+    // folder (only admins reach that screen client-side, same trust model as above).
+    match /storeImages/{uid}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
   }
 }

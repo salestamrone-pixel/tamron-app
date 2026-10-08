@@ -1,13 +1,17 @@
 import { Stack } from 'expo-router';
 import { addDoc, collection, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { Button, Card, Dialog, Empty, ErrorText, Field, Loading, Muted, P, Row, Screen, Title } from '@/components/kit';
 import { StaffGate } from '@/components/staff-gate';
 import { db } from '@/config/firebase';
+import { useAuth } from '@/context/AuthContext';
+import { pickImages, uploadStoreImage } from '@/lib/attachments';
 import { Product } from '@/types';
 
 function StoreAdmin() {
+  const { user } = useAuth();
   const [items, setItems] = useState<Product[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState<Product | null>(null);
@@ -15,8 +19,24 @@ function StoreAdmin() {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  const pickAndUpload = async () => {
+    if (!user) return;
+    setUploading(true);
+    try {
+      const [uri] = await pickImages(1);
+      if (!uri) return;
+      const url = await uploadStoreImage(user.uid, uri);
+      setImageUrl(url);
+    } catch {
+      setError('تعذر رفع الصورة.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     return onSnapshot(collection(db, 'products'), (snap) =>
@@ -76,7 +96,13 @@ function StoreAdmin() {
         <Field label="الاسم" value={title} onChangeText={setTitle} />
         <Field label="الوصف" value={description} onChangeText={setDescription} multiline />
         <Field label="السعر (اختياري)" placeholder="مثال: يبدأ من 500 ريال" value={price} onChangeText={setPrice} />
-        <Field label="رابط الصورة (اختياري)" placeholder="https://..." value={imageUrl} onChangeText={setImageUrl} autoCapitalize="none" style={{ textAlign: 'left' }} />
+        {imageUrl ? (
+          <View style={styles.previewWrap}>
+            <Image source={{ uri: imageUrl }} style={styles.preview} />
+          </View>
+        ) : null}
+        <Button label={imageUrl ? 'تغيير الصورة' : 'رفع صورة من الجهاز'} icon="camera-outline" variant="outline" onPress={pickAndUpload} loading={uploading} />
+        <Field label="أو رابط الصورة (اختياري)" placeholder="https://..." value={imageUrl} onChangeText={setImageUrl} autoCapitalize="none" style={{ textAlign: 'left' }} />
         <Button label="حفظ" onPress={add} loading={saving} />
         <Button label="إلغاء" variant="outline" onPress={() => setAdding(false)} />
       </Dialog>
@@ -106,3 +132,8 @@ export default function AdminStore() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  previewWrap: { alignItems: 'flex-end' },
+  preview: { width: 100, height: 100, borderRadius: 14 },
+});

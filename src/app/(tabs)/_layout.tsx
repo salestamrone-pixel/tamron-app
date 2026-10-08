@@ -1,3 +1,4 @@
+import * as Notifications from 'expo-notifications';
 import { Tabs } from 'expo-router/js-tabs';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -40,6 +41,11 @@ export default function TabsLayout() {
       () => setWaiting(0),
     );
   }, [user]);
+
+  // Mirrors the same count onto the app's home-screen launcher icon.
+  useEffect(() => {
+    Notifications.setBadgeCountAsync(waiting).catch(() => {});
+  }, [waiting]);
   return (
     <>
       <Tabs
