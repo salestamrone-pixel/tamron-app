@@ -3,6 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { auth, db } from '@/config/firebase';
+import { registerForPushNotifications } from '@/lib/push';
 import { StaffMember, User } from '@/types';
 
 interface AuthContextType {
@@ -73,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStaff(await loadStaff(firebaseUser));
     setStatus(staffStatus);
     setLoading(false);
+    registerForPushNotifications(firebaseUser.uid);
   }, []);
 
   useEffect(() => onAuthStateChanged(auth, apply), [apply]);

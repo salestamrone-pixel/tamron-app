@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { font, Icon, Logo, palette } from '@/components/kit';
 import { MainMenu } from '@/components/kingdom';
 import { PromoBanner, PromoSlide } from '@/components/promo-banner';
+import { UpdateBanner } from '@/components/update-banner';
 import { SERVICES } from '@/constants/services';
 import { useAuth } from '@/context/AuthContext';
 import { openMenu } from '@/lib/menu-store';
@@ -82,6 +83,7 @@ export default function HomeScreen() {
               </View>
             ) : null}
           </View>
+          <UpdateBanner />
           <View style={styles.bannerSpacer} />
           <PromoBanner slides={slides} />
           <MainMenu items={items} onOpenSection={(key) => router.push({ pathname: '/section', params: { key } } as never)} />

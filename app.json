@@ -60,7 +60,14 @@
           }
         }
       ],
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-foreground.png",
+          "color": "#CCA741"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -75,7 +82,8 @@
       "router": {},
       "eas": {
         "projectId": "08873681-277a-40ec-90b5-9f9443ffbaea"
-      }
+      },
+      "buildNumber": 11
     },
     "runtimeVersion": {
       "policy": "appVersion"

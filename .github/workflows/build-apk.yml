@@ -45,6 +45,18 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
+      # Lets the app itself (src/lib/update-check.ts) compare its own build number against
+      # GitHub's latest release and tell the user a newer APK exists. Only patches this
+      # runner's checkout, not the committed app.json.
+      - name: Stamp this build's number into app.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+            p.expo.extra.buildNumber = ${{ github.run_number }};
+            fs.writeFileSync('app.json', JSON.stringify(p, null, 2) + '\n');
+          "
+
       # Two builds in a row got killed with "The operation was canceled" around the
       # 25-30 minute mark, mid-compile, with no error from our own script. That's the
       # signature of the runner running out of disk and GitHub's infra reclaiming the

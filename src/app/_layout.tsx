@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { I18nManager } from 'react-native';
 
+import { FloatingWhatsApp } from '@/components/floating-whatsapp';
 import { Intro } from '@/components/intro';
 import { headerOptions } from '@/components/kit';
 import { AuthProvider } from '@/context/AuthContext';
@@ -45,6 +46,7 @@ export default function RootLayout() {
         <Stack screenOptions={{ ...headerOptions, headerBackTitle: 'رجوع' }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
+        {introDone ? <FloatingWhatsApp /> : null}
         {!introDone ? <Intro onDone={finishIntro} /> : null}
       </ThemeProvider>
     </AuthProvider>

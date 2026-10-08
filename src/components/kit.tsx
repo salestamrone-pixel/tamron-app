@@ -289,6 +289,50 @@ export function Field({ label, multiline, style, onFocus, onBlur, ...props }: Te
   );
 }
 
+export function SearchBar({
+  value,
+  onChangeText,
+  placeholder = 'بحث...',
+}: {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <View style={styles.searchBar}>
+      <Icon name="search-outline" size={18} color={palette.muted} />
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#A8A292"
+        style={styles.searchInput}
+      />
+      {value.length > 0 ? (
+        <Pressable onPress={() => onChangeText('')} hitSlop={8}>
+          <Icon name="close-circle" size={18} color={palette.muted} />
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+// Static placeholder blocks while data loads — deliberately not shimmering: this app
+// doesn't use motion anywhere except the one intro screen.
+export function SkeletonGrid({ count = 4 }: { count?: number }) {
+  return (
+    <View style={styles.skeletonGrid}>
+      {Array.from({ length: count }).map((_, i) => (
+        <View key={i} style={styles.skeletonCard}>
+          <View style={styles.skeletonImage} />
+          <View style={[styles.skeletonLine, { width: '70%' }]} />
+          <View style={[styles.skeletonLine, { width: '45%' }]} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
 export function Badge({ label, color }: { label: string; color: string }) {
   return (
     <View style={[styles.badge, { backgroundColor: color + '1A' }]}>
@@ -425,6 +469,22 @@ const styles = StyleSheet.create({
   },
   inputFocused: { borderColor: palette.gold, backgroundColor: palette.card },
   multiline: { minHeight: 124, textAlignVertical: 'top' },
+  searchBar: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 8,
+    height: 48,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  searchInput: { flex: 1, fontSize: 14, fontFamily: font.regular, color: palette.text, textAlign: 'right' },
+  skeletonGrid: { gap: 14 },
+  skeletonCard: { gap: 10, padding: 12, borderRadius: 18, backgroundColor: palette.card, borderWidth: 1, borderColor: palette.border },
+  skeletonImage: { width: '100%', height: 170, borderRadius: 18, backgroundColor: palette.surface },
+  skeletonLine: { height: 14, borderRadius: 7, backgroundColor: palette.surface, alignSelf: 'flex-end' },
   buttonWrap: { borderRadius: 999, overflow: 'hidden', flexGrow: 1 },
   button: {
     borderRadius: 999,

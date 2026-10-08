@@ -50,6 +50,12 @@ service cloud.firestore {
         && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
+    // One push token per signed-in user; only they can read or replace it.
+    // Cloud Functions read/send through the Admin SDK, which bypasses these rules.
+    match /pushTokens/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
     match /products/{id} {
       allow read: if true;
       allow write: if isAdmin();
