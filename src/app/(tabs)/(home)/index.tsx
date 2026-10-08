@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { font, Icon, Logo, palette } from '@/components/kit';
 import { MainMenu } from '@/components/kingdom';
+import { PromoBanner, PromoSlide } from '@/components/promo-banner';
+import { SERVICES } from '@/constants/services';
 import { useAuth } from '@/context/AuthContext';
 import { openMenu } from '@/lib/menu-store';
 import { useMenuItems } from '@/lib/use-menu-items';
@@ -15,6 +17,49 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const items = useMenuItems();
   const firstName = user?.displayName?.split(' ')[0];
+
+  const slides: PromoSlide[] = [
+    {
+      key: 'services',
+      icon: 'grid-outline',
+      title: `${SERVICES.length} خدمة احترافية`,
+      subtitle: 'من التصميم حتى التركيب، في مكان واحد.',
+      cta: 'تصفح الخدمات',
+      onPress: () => router.push('/services'),
+    },
+    {
+      key: 'quote',
+      icon: 'cash-outline',
+      title: 'عرض سعر خلال دقائق',
+      subtitle: 'ابعتلنا مواصفات شغلك ونرد عليك بالسعر.',
+      cta: 'اطلب الآن',
+      onPress: () => router.push('/services'),
+    },
+    {
+      key: 'factory',
+      icon: 'construct-outline',
+      title: 'مصنعنا الخاص',
+      subtitle: 'فايبر ليزر وCNC وطباعة رقمية بأحدث الآلات.',
+      cta: 'تعرّف علينا',
+      onPress: () => router.push('/about'),
+    },
+    {
+      key: 'orders',
+      icon: 'document-text-outline',
+      title: 'تابع طلبك',
+      subtitle: 'شوف حالة طلباتك وردود الأسعار أول بأول.',
+      cta: 'طلباتي',
+      onPress: () => router.push('/orders'),
+    },
+    {
+      key: 'store',
+      icon: 'storefront-outline',
+      title: 'متجرنا',
+      subtitle: 'منتجاتنا الجاهزة ومعرض أعمالنا.',
+      cta: 'تصفح المتجر',
+      onPress: () => router.push('/store'),
+    },
+  ];
 
   return (
     <View style={styles.root}>
@@ -37,7 +82,8 @@ export default function HomeScreen() {
               </View>
             ) : null}
           </View>
-          <View style={styles.spacer} />
+          <View style={styles.bannerSpacer} />
+          <PromoBanner slides={slides} />
           <MainMenu items={items} onOpenSection={(key) => router.push({ pathname: '/section', params: { key } } as never)} />
           <Pressable onPress={() => router.push('/services')} style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}>
             <Text style={styles.ctaText}>اطلب عرض سعر</Text>
@@ -55,7 +101,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'space-between' },
   hello: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: 'rgba(10,10,10,0.55)', borderWidth: 1, borderColor: 'rgba(204,167,65,0.6)' },
   helloText: { color: '#fff', fontSize: 13, fontFamily: font.bold },
-  spacer: { height: 220 },
+  bannerSpacer: { height: 120 },
   cta: {
     flexDirection: 'row',
     gap: 8,
