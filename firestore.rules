@@ -56,6 +56,23 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
+    // Written once per login (any signed-in account, staff or customer) so the admin
+    // dashboard can list who has used the app. A user may only ever touch their own doc.
+    match /users/{uid} {
+      allow read: if isManager() || (request.auth != null && request.auth.uid == uid);
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // One shared counter doc, bumped on every app open (including signed-out visits).
+    // Field-restricted and monotonic-only so an open write can't be used to inject or erase data.
+    match /analytics/summary {
+      allow read: if isManager();
+      allow create: if request.resource.data.keys().hasOnly(['totalOpens', 'uniqueDevices']);
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['totalOpens', 'uniqueDevices'])
+        && request.resource.data.totalOpens >= resource.data.totalOpens
+        && request.resource.data.uniqueDevices >= resource.data.uniqueDevices;
+    }
+
     match /products/{id} {
       allow read: if true;
       allow write: if isAdmin();

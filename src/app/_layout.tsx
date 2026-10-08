@@ -15,6 +15,7 @@ import { FloatingWhatsApp } from '@/components/floating-whatsapp';
 import { Intro } from '@/components/intro';
 import { headerOptions } from '@/components/kit';
 import { AuthProvider } from '@/context/AuthContext';
+import { recordAppOpen } from '@/lib/visit-tracker';
 import '@/lib/tracking';
 
 // Screens lay themselves out right-to-left explicitly, so the system must not mirror them a second time.
@@ -36,6 +37,10 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
   }, [ready]);
+
+  useEffect(() => {
+    recordAppOpen();
+  }, []);
 
   if (!ready) return null;
 

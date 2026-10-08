@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 import { auth, db } from '@/config/firebase';
 import { registerForPushNotifications } from '@/lib/push';
+import { recordUserProfile } from '@/lib/user-profile';
 import { StaffMember, User } from '@/types';
 
 interface AuthContextType {
@@ -71,10 +72,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       displayName: firebaseUser.displayName ?? undefined,
       emailVerified: firebaseUser.emailVerified,
     });
-    setStaff(await loadStaff(firebaseUser));
+    const staffMember = await loadStaff(firebaseUser);
+    setStaff(staffMember);
     setStatus(staffStatus);
     setLoading(false);
     registerForPushNotifications(firebaseUser.uid);
+    recordUserProfile(firebaseUser, staffMember?.role ?? 'customer');
   }, []);
 
   useEffect(() => onAuthStateChanged(auth, apply), [apply]);

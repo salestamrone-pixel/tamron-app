@@ -110,6 +110,7 @@ export default function AdminHome() {
                 <Tile icon="people-outline" color="#7C5CFF" title="الموظفون" onPress={go('/admin/employees')} />
                 <Tile icon="navigate-circle-outline" color="#3B82F6" title="مواقع العمل" onPress={go('/admin/sites')} />
                 <Tile icon="shield-checkmark-outline" color="#475569" title="سجل العمليات" onPress={go('/admin/audit')} />
+                <Tile icon="analytics-outline" color="#0EA5E9" title="الزوار والمستخدمون" onPress={go('/admin/analytics')} />
               </Grid>
             </>
           ) : null}

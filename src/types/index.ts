@@ -112,6 +112,19 @@ export interface Product {
   imageUrl?: string;
 }
 
+export interface UserRecord {
+  id: string;
+  email: string;
+  name: string;
+  emailVerified: boolean;
+  role: string;
+  platform: string;
+  deviceModel: string | null;
+  appBuild: number | null;
+  createdAt: Timestamp | null;
+  lastLoginAt: Timestamp | null;
+}
+
 export interface WorkSite {
   id: string;
   name: string;
