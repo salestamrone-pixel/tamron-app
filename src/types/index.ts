@@ -81,6 +81,15 @@ export interface QuoteRequest {
   createdAt: Timestamp | null;
 }
 
+export interface QuoteMessage {
+  id: string;
+  senderId: string;
+  senderRole: 'customer' | 'admin';
+  senderName: string;
+  text: string;
+  createdAt: Timestamp | null;
+}
+
 export interface PortfolioItem {
   id: string;
   title: string;
@@ -111,6 +120,7 @@ export interface Product {
   description: string;
   price: string;
   imageUrl?: string;
+  category?: string;
 }
 
 export interface UserRecord {

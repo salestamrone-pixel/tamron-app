@@ -3,12 +3,14 @@ import { addDoc, collection, deleteDoc, doc, onSnapshot } from 'firebase/firesto
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { Button, Card, Dialog, Empty, ErrorText, Field, Loading, Muted, P, Row, Screen, Title } from '@/components/kit';
+import { Button, Card, Chip, Dialog, Empty, ErrorText, Field, Loading, Muted, P, Row, Screen, Title } from '@/components/kit';
 import { StaffGate } from '@/components/staff-gate';
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { pickImages, uploadStoreImage } from '@/lib/attachments';
 import { Product } from '@/types';
+
+const SUGGESTED_CATEGORIES = ['بنرات', 'لوحات', 'أعمال معدنية', 'هدايا دعائية', 'أخرى'];
 
 function StoreAdmin() {
   const { user } = useAuth();
@@ -18,6 +20,7 @@ function StoreAdmin() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -59,12 +62,14 @@ function StoreAdmin() {
         title: title.trim(),
         description: description.trim(),
         price: price.trim(),
+        category: category.trim(),
         imageUrl: imageUrl.trim(),
       });
       setAdding(false);
       setTitle('');
       setDescription('');
       setPrice('');
+      setCategory('');
       setImageUrl('');
       setError('');
     } catch {
@@ -83,6 +88,7 @@ function StoreAdmin() {
       {items.map((p) => (
         <Card key={p.id}>
           <Title>{p.title}</Title>
+          {p.category ? <Muted>{p.category}</Muted> : null}
           {p.description ? <P>{p.description}</P> : null}
           {p.price ? <Muted>السعر: {p.price}</Muted> : null}
           <Row>
@@ -96,6 +102,13 @@ function StoreAdmin() {
         <Field label="الاسم" value={title} onChangeText={setTitle} />
         <Field label="الوصف" value={description} onChangeText={setDescription} multiline />
         <Field label="السعر (اختياري)" placeholder="مثال: يبدأ من 500 ريال" value={price} onChangeText={setPrice} />
+        <Muted>التصنيف (اختياري)</Muted>
+        <Row>
+          {SUGGESTED_CATEGORIES.map((c) => (
+            <Chip key={c} label={c} selected={category === c} onPress={() => setCategory(c)} />
+          ))}
+        </Row>
+        <Field label="أو تصنيف مخصص" value={category} onChangeText={setCategory} />
         {imageUrl ? (
           <View style={styles.previewWrap}>
             <Image source={{ uri: imageUrl }} style={styles.preview} />

@@ -171,6 +171,15 @@ export default function AboutScreen() {
         {testimonials.length > 0 ? (
           <>
             <Section>آراء عملائنا</Section>
+            <View style={styles.ratingSummary}>
+              <Text style={styles.ratingValue}>
+                {(testimonials.reduce((sum, t) => sum + t.rating, 0) / testimonials.length).toFixed(1)}
+              </Text>
+              <View style={{ gap: 2 }}>
+                <Stars value={Math.round(testimonials.reduce((sum, t) => sum + t.rating, 0) / testimonials.length)} />
+                <Muted>بناءً على {testimonials.length} {testimonials.length === 1 ? 'رأي' : 'رأي عميل'}</Muted>
+              </View>
+            </View>
             {testimonials.map((t) => (
               <Card key={t.id} style={{ gap: 6 }}>
                 <Stars value={t.rating} />
@@ -230,4 +239,6 @@ const styles = StyleSheet.create({
   strengthText: { flex: 1, fontSize: 14, fontFamily: font.medium, color: palette.text, textAlign: 'right' },
   contactBtn: { flexDirection: 'row-reverse', alignItems: 'center', gap: 10, paddingVertical: 9 },
   contactText: { fontSize: 14, fontFamily: font.bold, color: palette.text, textAlign: 'right', flex: 1 },
+  ratingSummary: { flexDirection: 'row-reverse', alignItems: 'center', gap: 10 },
+  ratingValue: { fontSize: 32, fontFamily: font.black, color: palette.goldDark },
 });

@@ -20,5 +20,14 @@ service firebase.storage {
         && request.resource.size < 8 * 1024 * 1024
         && request.resource.contentType.matches('image/.*');
     }
+
+    // Work-sample photo attached when an admin marks a quote request "done" and adds
+    // it to the public portfolio gallery.
+    match /portfolioImages/{uid}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
   }
 }

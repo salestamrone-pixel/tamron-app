@@ -23,6 +23,13 @@ async function sendExpoPush(messages) {
   }
 }
 
+async function getAdminTokens() {
+  const adminUids = (await db.collection('users').where('role', '==', 'admin').get()).docs.map((d) => d.id);
+  if (adminUids.length === 0) return [];
+  const tokenDocs = await Promise.all(adminUids.map((uid) => db.doc(`pushTokens/${uid}`).get()));
+  return tokenDocs.map((d) => d.data()?.token).filter(Boolean);
+}
+
 // Mirrors src/constants/services.ts STATUS_LABELS — kept in sync by hand since this
 // function runs outside the Expo app bundle.
 const STATUS_LABELS = {
@@ -71,14 +78,33 @@ exports.remindStaleRequests = onSchedule('every 24 hours', async () => {
   const staleSnap = await db.collection('quoteRequests').where('status', '==', 'new').where('createdAt', '<=', since).get();
   if (staleSnap.empty) return;
 
-  const adminUids = (await db.collection('users').where('role', '==', 'admin').get()).docs.map((d) => d.id);
-  if (adminUids.length === 0) return;
-
-  const tokenDocs = await Promise.all(adminUids.map((uid) => db.doc(`pushTokens/${uid}`).get()));
-  const tokens = tokenDocs.map((d) => d.data()?.token).filter(Boolean);
+  const tokens = await getAdminTokens();
   if (tokens.length === 0) return;
 
   const count = staleSnap.size;
   const body = count === 1 ? 'يوجد طلب عميل واحد بانتظار الرد منذ أكثر من يوم.' : `يوجد ${count} طلبات عملاء بانتظار الرد منذ أكثر من يوم.`;
   await sendExpoPush(tokens.map((to) => ({ to, title: 'طلبات بانتظار الرد', body, sound: 'default' })));
+});
+
+// A message on the quote's chat thread notifies whichever side didn't send it:
+// the customer sending pings every admin, an admin reply pings just that customer.
+exports.notifyQuoteMessage = onDocumentCreated('quoteRequests/{id}/messages/{messageId}', async (event) => {
+  const message = event.data.data();
+  const quoteSnap = await db.doc(`quoteRequests/${event.params.id}`).get();
+  const quote = quoteSnap.data();
+  if (!quote) return;
+
+  const preview = message.text.length > 80 ? `${message.text.slice(0, 80)}…` : message.text;
+  const data = { quoteId: event.params.id };
+
+  if (message.senderRole === 'customer') {
+    const tokens = await getAdminTokens();
+    if (tokens.length === 0) return;
+    await sendExpoPush(tokens.map((to) => ({ to, title: `رسالة من ${message.senderName || quote.userName}`, body: preview, sound: 'default', data })));
+  } else {
+    const tokenSnap = await db.doc(`pushTokens/${quote.userId}`).get();
+    const token = tokenSnap.data()?.token;
+    if (!token) return;
+    await sendExpoPush([{ to: token, title: 'رسالة جديدة بخصوص طلبك', body: preview, sound: 'default', data }]);
+  }
 });

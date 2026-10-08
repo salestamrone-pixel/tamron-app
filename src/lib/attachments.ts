@@ -34,3 +34,8 @@ export function uploadAttachment(uid: string, uri: string): Promise<string> {
 export function uploadStoreImage(uid: string, uri: string): Promise<string> {
   return uploadToStorage(`storeImages/${uid}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`, uri);
 }
+
+// A finished quote request's photo, added straight to the public work gallery.
+export function uploadPortfolioImage(uid: string, uri: string): Promise<string> {
+  return uploadToStorage(`portfolioImages/${uid}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`, uri);
+}

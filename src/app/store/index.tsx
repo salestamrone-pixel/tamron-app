@@ -3,7 +3,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 
-import { Button, Card, Empty, font, Icon, Muted, palette, Screen, SearchBar, SkeletonGrid, Title } from '@/components/kit';
+import { Button, Card, Chip, Empty, font, Icon, Muted, palette, Row, Screen, SearchBar, SkeletonGrid, Title } from '@/components/kit';
 import { db } from '@/config/firebase';
 import { Product } from '@/types';
 
@@ -11,6 +11,7 @@ export default function StoreScreen() {
   const router = useRouter();
   const [items, setItems] = useState<Product[] | null>(null);
   const [query, setQuery] = useState('');
+  const [category, setCategory] = useState<string | 'all'>('all');
 
   useEffect(() => {
     return onSnapshot(
@@ -20,11 +21,20 @@ export default function StoreScreen() {
     );
   }, []);
 
+  const categories = useMemo(() => {
+    if (!items) return [];
+    return Array.from(new Set(items.map((p) => p.category).filter((c): c is string => !!c)));
+  }, [items]);
+
   const filtered = useMemo(() => {
+    if (!items) return items;
     const q = query.trim();
-    if (!q || !items) return items;
-    return items.filter((p) => p.title.includes(q) || p.description?.includes(q));
-  }, [items, query]);
+    return items.filter((p) => {
+      const matchesQuery = !q || p.title.includes(q) || p.description?.includes(q);
+      const matchesCategory = category === 'all' || p.category === category;
+      return matchesQuery && matchesCategory;
+    });
+  }, [items, query, category]);
 
   return (
     <>
@@ -38,6 +48,14 @@ export default function StoreScreen() {
       ) : (
         <Screen>
           <SearchBar value={query} onChangeText={setQuery} placeholder="ابحث في المتجر..." />
+          {categories.length > 0 ? (
+            <Row>
+              <Chip label="الكل" selected={category === 'all'} onPress={() => setCategory('all')} />
+              {categories.map((c) => (
+                <Chip key={c} label={c} selected={category === c} onPress={() => setCategory(c)} />
+              ))}
+            </Row>
+          ) : null}
           {filtered && filtered.length === 0 ? (
             <Empty icon="search-outline" title="لا توجد نتائج" message="جرّب كلمة بحث مختلفة." />
           ) : null}

@@ -1,19 +1,27 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { addDoc, collection, doc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
-import { Button, Dialog, Empty, ErrorText, Field, Icon, ListItem, Muted, palette, Screen } from '@/components/kit';
+import { Button, Dialog, Empty, ErrorText, Field, Icon, ListItem, Loading, Muted, palette, Screen } from '@/components/kit';
 import { db } from '@/config/firebase';
 import { SERVICES } from '@/constants/services';
 import { useAuth } from '@/context/AuthContext';
 import { pickImages, uploadAttachment } from '@/lib/attachments';
+import { QuoteRequest } from '@/types';
 
 export default function RequestScreen() {
-  const { serviceId, product } = useLocalSearchParams<{ serviceId?: string; product?: string }>();
-  const service = SERVICES.find((s) => s.id === serviceId) ?? SERVICES[SERVICES.length - 1];
+  const { serviceId, product, editId, repeatFrom } = useLocalSearchParams<{
+    serviceId?: string;
+    product?: string;
+    editId?: string;
+    repeatFrom?: string;
+  }>();
   const { user } = useAuth();
   const router = useRouter();
+
+  const [serviceIdState, setServiceIdState] = useState(serviceId);
+  const service = SERVICES.find((s) => s.id === serviceIdState) ?? SERVICES[SERVICES.length - 1];
 
   const [details, setDetails] = useState(product ? `أرغب بطلب: ${product}` : '');
   const [dimensions, setDimensions] = useState('');
@@ -25,8 +33,10 @@ export default function RequestScreen() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
+  const [loadingSource, setLoadingSource] = useState(!!editId || !!repeatFrom);
 
-  const header = <Stack.Screen options={{ title: 'طلب عرض سعر' }} />;
+  const isEdit = !!editId;
+  const header = <Stack.Screen options={{ title: isEdit ? 'تعديل الطلب' : 'طلب عرض سعر' }} />;
 
   useEffect(() => {
     if (!user) return;
@@ -37,6 +47,29 @@ export default function RequestScreen() {
       })
       .catch(() => {});
   }, [user]);
+
+  // Loads an existing request either to edit it in place, or to copy its details
+  // into a brand-new request ("اطلب نفس الشيء تاني").
+  useEffect(() => {
+    const sourceId = editId ?? repeatFrom;
+    if (!sourceId) return;
+    getDoc(doc(db, 'quoteRequests', sourceId))
+      .then((snap) => {
+        const data = snap.data() as QuoteRequest | undefined;
+        if (!data) return;
+        setServiceIdState(data.serviceId);
+        setDetails(data.details ?? '');
+        setDimensions(data.dimensions ?? '');
+        setQuantity(data.quantity ?? '');
+        setLocation(data.location ?? '');
+        if (editId) {
+          setPhone(data.phone ?? '');
+          setImages(data.attachments ?? []);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingSource(false));
+  }, [editId, repeatFrom]);
 
   const addImages = async () => {
     setPicking(true);
@@ -71,25 +104,40 @@ export default function RequestScreen() {
     setError('');
     setSending(true);
     try {
-      const attachments = await Promise.all(images.map((uri) => uploadAttachment(user.uid, uri)));
-      await addDoc(collection(db, 'quoteRequests'), {
-        userId: user.uid,
-        userName: user.displayName ?? '',
-        userEmail: user.email,
-        phone: phone.trim(),
-        serviceId: service.id,
-        serviceName: service.name,
-        details: details.trim(),
-        dimensions: dimensions.trim(),
-        quantity: quantity.trim(),
-        location: location.trim(),
-        status: 'new',
-        attachments,
-        createdAt: serverTimestamp(),
-      });
+      const newUploads = await Promise.all(
+        images.filter((uri) => !uri.startsWith('http')).map((uri) => uploadAttachment(user.uid, uri)),
+      );
+      const attachments = [...images.filter((uri) => uri.startsWith('http')), ...newUploads];
+
+      if (isEdit && editId) {
+        await updateDoc(doc(db, 'quoteRequests', editId), {
+          details: details.trim(),
+          dimensions: dimensions.trim(),
+          quantity: quantity.trim(),
+          location: location.trim(),
+          phone: phone.trim(),
+          attachments,
+        });
+      } else {
+        await addDoc(collection(db, 'quoteRequests'), {
+          userId: user.uid,
+          userName: user.displayName ?? '',
+          userEmail: user.email,
+          phone: phone.trim(),
+          serviceId: service.id,
+          serviceName: service.name,
+          details: details.trim(),
+          dimensions: dimensions.trim(),
+          quantity: quantity.trim(),
+          location: location.trim(),
+          status: 'new',
+          attachments,
+          createdAt: serverTimestamp(),
+        });
+      }
       setSent(true);
     } catch {
-      setError('تعذر إرسال الطلب. تحقق من الاتصال وحاول مرة أخرى.');
+      setError(isEdit ? 'تعذر حفظ التعديل. حاول مرة أخرى.' : 'تعذر إرسال الطلب. تحقق من الاتصال وحاول مرة أخرى.');
     } finally {
       setSending(false);
     }
@@ -99,6 +147,15 @@ export default function RequestScreen() {
     setSent(false);
     router.dismissTo('/orders');
   };
+
+  if (loadingSource) {
+    return (
+      <>
+        {header}
+        <Loading />
+      </>
+    );
+  }
 
   return (
     <Screen>
@@ -132,9 +189,15 @@ export default function RequestScreen() {
         ) : null}
       </View>
 
-      <Button label="إرسال الطلب" icon="paper-plane-outline" onPress={submit} loading={sending} />
+      <Button label={isEdit ? 'حفظ التعديلات' : 'إرسال الطلب'} icon="paper-plane-outline" onPress={submit} loading={sending} />
 
-      <Dialog visible={sent} icon="checkmark-circle-outline" tone={palette.success} title="تم إرسال طلبك" message="سنراجع المواصفات ونرد عليك بعرض السعر. تابع الرد من صفحة «طلباتي»." onClose={finish}>
+      <Dialog
+        visible={sent}
+        icon="checkmark-circle-outline"
+        tone={palette.success}
+        title={isEdit ? 'تم حفظ التعديلات' : 'تم إرسال طلبك'}
+        message={isEdit ? 'تم تحديث بيانات طلبك.' : 'سنراجع المواصفات ونرد عليك بعرض السعر. تابع الرد من صفحة «طلباتي».'}
+        onClose={finish}>
         <Button label="عرض طلباتي" onPress={finish} />
       </Dialog>
     </Screen>

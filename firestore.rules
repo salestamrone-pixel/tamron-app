@@ -45,9 +45,33 @@ service cloud.firestore {
         && !('reply' in request.resource.data);
       allow read: if request.auth != null
         && (resource.data.userId == request.auth.uid || isAdmin());
-      allow update: if isAdmin();
+      // Admin may change anything (status, reply...). The owner may only edit their own
+      // request's details, or cancel it, as long as the company hasn't replied yet.
+      allow update: if isAdmin() || (
+        request.auth != null && resource.data.userId == request.auth.uid
+        && resource.data.status == 'new' && !('reply' in resource.data)
+        && (
+          (request.resource.data.status == 'cancelled'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']))
+          || (request.resource.data.status == 'new'
+            && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['details', 'dimensions', 'quantity', 'location', 'phone', 'attachments']))
+        )
+      );
       allow delete: if request.auth != null
         && (resource.data.userId == request.auth.uid || isAdmin());
+
+      // A free-form thread on one request: the customer who owns it and any admin can
+      // both read and post. Neither can edit or remove a message once sent.
+      match /messages/{messageId} {
+        function quote() {
+          return get(/databases/$(database)/documents/quoteRequests/$(id));
+        }
+        allow read: if request.auth != null && (quote().data.userId == request.auth.uid || isAdmin());
+        allow create: if request.auth != null
+          && request.resource.data.senderId == request.auth.uid
+          && (quote().data.userId == request.auth.uid || isAdmin());
+      }
     }
 
     // One push token per signed-in user; only they can read or replace it.
