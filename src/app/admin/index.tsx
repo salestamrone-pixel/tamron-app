@@ -3,7 +3,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Card, font, Grid, Hero, Muted, palette, Screen, Section, Tile, Title } from '@/components/kit';
+import { badgeColors, Card, font, Grid, Hero, Muted, palette, Screen, Section, Tile, Title } from '@/components/kit';
 import { StaffGate } from '@/components/staff-gate';
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
@@ -94,25 +94,25 @@ export default function AdminHome() {
           <Dashboard />
           <Section>الموارد البشرية</Section>
           <Grid>
-            <Tile icon="calendar-outline" title="الحضور والانصراف" onPress={go('/admin/attendance')} />
-            <Tile icon="calendar-number-outline" title="الإجازات والأذونات" onPress={go('/admin/hr')} />
-            <Tile icon="cash-outline" title="الرواتب والخصومات" onPress={go('/admin/payroll')} />
-            <Tile icon="stats-chart-outline" title="تقرير الحضور" onPress={go('/admin/report')} />
-            <Tile icon="checkbox-outline" title="مهام التنفيذ" onPress={go('/admin/tasks')} />
+            <Tile icon="calendar-outline" color={badgeColors.emerald} title="الحضور والانصراف" onPress={go('/admin/attendance')} />
+            <Tile icon="calendar-number-outline" color={badgeColors.amber} title="الإجازات والأذونات" onPress={go('/admin/hr')} />
+            <Tile icon="cash-outline" color={badgeColors.sapphire} title="الرواتب والخصومات" onPress={go('/admin/payroll')} />
+            <Tile icon="stats-chart-outline" color={badgeColors.burgundy} title="تقرير الحضور" onPress={go('/admin/report')} />
+            <Tile icon="checkbox-outline" color={badgeColors.amber} title="مهام التنفيذ" onPress={go('/admin/tasks')} />
           </Grid>
           {isAdmin ? (
             <>
               <Section>الإدارة</Section>
               <Grid>
-                <Tile icon="document-text-outline" title="طلبات العملاء" onPress={go('/admin/requests')} />
-                <Tile icon="storefront-outline" title="إدارة المتجر" onPress={go('/admin/store')} />
-                <Tile icon="radio-outline" title="التتبع المباشر" onPress={go('/admin/live')} />
-                <Tile icon="people-outline" title="الموظفون" onPress={go('/admin/employees')} />
-                <Tile icon="navigate-circle-outline" title="مواقع العمل" onPress={go('/admin/sites')} />
-                <Tile icon="shield-checkmark-outline" title="سجل العمليات" onPress={go('/admin/audit')} />
-                <Tile icon="analytics-outline" title="الزوار والمستخدمون" onPress={go('/admin/analytics')} />
-                <Tile icon="chatbox-ellipses-outline" title="آراء العملاء" onPress={go('/admin/testimonials')} />
-                <Tile icon="megaphone-outline" title="إشعار للعملاء" onPress={go('/admin/broadcast')} />
+                <Tile icon="document-text-outline" color={badgeColors.amber} title="طلبات العملاء" onPress={go('/admin/requests')} />
+                <Tile icon="storefront-outline" color={badgeColors.burgundy} title="إدارة المتجر" onPress={go('/admin/store')} />
+                <Tile icon="radio-outline" color={badgeColors.sapphire} title="التتبع المباشر" onPress={go('/admin/live')} />
+                <Tile icon="people-outline" color={badgeColors.emerald} title="الموظفون" onPress={go('/admin/employees')} />
+                <Tile icon="navigate-circle-outline" color={badgeColors.sapphire} title="مواقع العمل" onPress={go('/admin/sites')} />
+                <Tile icon="shield-checkmark-outline" color={badgeColors.burgundy} title="سجل العمليات" onPress={go('/admin/audit')} />
+                <Tile icon="analytics-outline" color={badgeColors.emerald} title="الزوار والمستخدمون" onPress={go('/admin/analytics')} />
+                <Tile icon="chatbox-ellipses-outline" color={badgeColors.amber} title="آراء العملاء" onPress={go('/admin/testimonials')} />
+                <Tile icon="megaphone-outline" color={badgeColors.sapphire} title="إشعار للعملاء" onPress={go('/admin/broadcast')} />
               </Grid>
             </>
           ) : null}

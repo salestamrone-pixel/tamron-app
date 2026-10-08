@@ -34,6 +34,16 @@ export const palette = {
   tint: '#F7F1DC',
 };
 
+// A small curated set of jewel tones that pair with the gold ring/glyph every badge
+// already carries — enough variety to tell categories apart without the "random
+// rainbow icon pack" look the brand pass replaced.
+export const badgeColors = {
+  emerald: '#0E6B4F',
+  sapphire: '#1D3F6E',
+  burgundy: '#7A1F3D',
+  amber: '#A5531A',
+} as const;
+
 export const goldGradient = [palette.goldDark, palette.goldLight, palette.gold] as const;
 export const inkGradient = ['#000000', '#1C1910'] as const;
 export const heroGradient = ['#F9E27D', '#EDB93F', '#E39B2C'] as const;
@@ -188,18 +198,23 @@ function solidIcon(name: IconName): IconName {
 
 // Same badge language as the home screen's tiles (kingdom.tsx): black disc, gold ring,
 // gold glyph — kept independent of that file to avoid a circular import with kit.tsx.
-function BrandBadge({ icon, size }: { icon: IconName; size: number }) {
+function BrandBadge({ icon, size, color }: { icon: IconName; size: number; color?: string }) {
   return (
-    <View style={[styles.brandBadge, { width: size, height: size, borderRadius: size / 2, borderWidth: Math.max(1.5, size * 0.03) }]}>
+    <View
+      style={[
+        styles.brandBadge,
+        { width: size, height: size, borderRadius: size / 2, borderWidth: Math.max(1.5, size * 0.03) },
+        color ? { backgroundColor: color } : null,
+      ]}>
       <Icon name={solidIcon(icon)} size={size * 0.46} color={palette.gold} />
     </View>
   );
 }
 
-export function Tile({ icon, title, onPress }: { icon: IconName; title: string; onPress: () => void }) {
+export function Tile({ icon, title, onPress, color }: { icon: IconName; title: string; onPress: () => void; color?: string }) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.card, styles.tile, pressed && styles.pressed]}>
-      <BrandBadge icon={icon} size={50} />
+      <BrandBadge icon={icon} size={50} color={color} />
       <Text style={styles.tileTitle}>{title}</Text>
     </Pressable>
   );

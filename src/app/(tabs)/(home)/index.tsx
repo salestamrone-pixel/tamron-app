@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { font, Icon, Logo, palette } from '@/components/kit';
+import { badgeColors, font, Icon, Logo, palette } from '@/components/kit';
 import { MainMenu } from '@/components/kingdom';
 import { PromoBanner, PromoSlide } from '@/components/promo-banner';
 import { UpdateBanner } from '@/components/update-banner';
@@ -26,6 +26,7 @@ export default function HomeScreen() {
       title: `${SERVICES.length} خدمة احترافية`,
       subtitle: 'من التصميم حتى التركيب، في مكان واحد.',
       cta: 'تصفح الخدمات',
+      color: badgeColors.amber,
       onPress: () => router.push('/services'),
     },
     {
@@ -34,6 +35,7 @@ export default function HomeScreen() {
       title: 'عرض سعر خلال دقائق',
       subtitle: 'ابعتلنا مواصفات شغلك ونرد عليك بالسعر.',
       cta: 'اطلب الآن',
+      color: badgeColors.sapphire,
       onPress: () => router.push('/services'),
     },
     {
@@ -42,6 +44,7 @@ export default function HomeScreen() {
       title: 'مصنعنا الخاص',
       subtitle: 'فايبر ليزر وCNC وطباعة رقمية بأحدث الآلات.',
       cta: 'تعرّف علينا',
+      color: badgeColors.emerald,
       onPress: () => router.push('/about'),
     },
     {
@@ -50,6 +53,7 @@ export default function HomeScreen() {
       title: 'تابع طلبك',
       subtitle: 'شوف حالة طلباتك وردود الأسعار أول بأول.',
       cta: 'طلباتي',
+      color: badgeColors.burgundy,
       onPress: () => router.push('/orders'),
     },
     {
@@ -58,6 +62,7 @@ export default function HomeScreen() {
       title: 'متجرنا',
       subtitle: 'منتجاتنا الجاهزة ومعرض أعمالنا.',
       cta: 'تصفح المتجر',
+      color: badgeColors.sapphire,
       onPress: () => router.push('/store'),
     },
   ];

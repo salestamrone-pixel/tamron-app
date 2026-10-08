@@ -34,9 +34,14 @@ function solidIcon(name: IconName): IconName {
 }
 
 // Badge in the logo's own language: a black disc, a gold ring, a gold glyph.
-function Badge({ icon, size }: { icon: IconName; size: number }) {
+function Badge({ icon, size, color }: { icon: IconName; size: number; color?: string }) {
   return (
-    <View style={[styles.badge, { width: size, height: size, borderRadius: size / 2, borderWidth: Math.max(1.5, size * 0.03) }]}>
+    <View
+      style={[
+        styles.badge,
+        { width: size, height: size, borderRadius: size / 2, borderWidth: Math.max(1.5, size * 0.03) },
+        color ? { backgroundColor: color } : null,
+      ]}>
       <Icon name={solidIcon(icon)} size={size * 0.46} color={palette.gold} />
     </View>
   );
@@ -45,7 +50,7 @@ function Badge({ icon, size }: { icon: IconName; size: number }) {
 function MegaTile({ item, onPress }: { item: MainItem; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.mega, pressed && { opacity: 0.8 }]}>
-      <Badge icon={item.icon} size={62} />
+      <Badge icon={item.icon} size={62} color={item.color} />
       <View style={{ alignItems: 'flex-end', gap: 2 }}>
         <Text style={styles.megaTitle}>{item.label}</Text>
         {item.subtitle ? <Text style={styles.megaSub} numberOfLines={1}>{item.subtitle}</Text> : null}
@@ -71,7 +76,7 @@ export function SubGrid({ subs }: { subs: SubItem[] }) {
     <View style={styles.subGrid}>
       {subs.map((sub) => (
         <Pressable key={sub.key} onPress={sub.onPress} style={({ pressed }) => [styles.sub, pressed && { opacity: 0.8 }]}>
-          <Badge icon={sub.icon} size={60} />
+          <Badge icon={sub.icon} size={60} color={sub.color} />
           <Text style={styles.subLabel} numberOfLines={2}>
             {sub.label}
           </Text>

@@ -9,6 +9,7 @@ export interface PromoSlide {
   title: string;
   subtitle: string;
   cta: string;
+  color?: string;
   onPress: () => void;
 }
 
@@ -39,7 +40,7 @@ export function PromoBanner({ slides }: { slides: PromoSlide[] }) {
         onMomentumScrollEnd={onScrollEnd}>
         {slides.map((s) => (
           <Pressable key={s.key} onPress={s.onPress} style={({ pressed }) => [styles.card, { width: cardWidth }, pressed && { opacity: 0.85 }]}>
-            <View style={styles.badge}>
+            <View style={[styles.badge, s.color ? { backgroundColor: s.color } : null]}>
               <Icon name={s.icon} size={26} color={palette.gold} />
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end', gap: 3 }}>
