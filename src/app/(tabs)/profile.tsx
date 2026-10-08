@@ -2,11 +2,15 @@ import { useRouter } from 'expo-router';
 import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import { Linking } from 'react-native';
 
 import { Button, Card, Dialog, Empty, ErrorText, Field, ListItem, Loading, Muted, P, palette, Screen, Title } from '@/components/kit';
 import { auth, db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { reauthWithGoogle } from '@/lib/google';
+
+// TODO: swap for a page under www.tamrone.sa once the company hosts one there.
+const PRIVACY_POLICY_URL = 'https://claude.ai/artifact/GQotoXtAbHDag2eb32GciL';
 
 export default function ProfileScreen() {
   const { user, staff, isStaff, isAdmin, loading, logout, staffStatus, refresh } = useAuth();
@@ -97,6 +101,7 @@ export default function ProfileScreen() {
       {isAdmin ? (
         <ListItem icon="shield-checkmark-outline" title="لوحة الإدارة" subtitle="إدارة الطلبات والموظفين" onPress={() => router.push('/admin')} />
       ) : null}
+      <ListItem icon="document-lock-outline" title="سياسة الخصوصية" onPress={() => Linking.openURL(PRIVACY_POLICY_URL)} />
 
       <Button label="تسجيل الخروج" icon="log-out-outline" variant="outline" onPress={logout} />
       <Button label="حذف الحساب" variant="danger" onPress={() => setConfirmDelete(true)} />

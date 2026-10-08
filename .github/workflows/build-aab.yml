@@ -1,0 +1,53 @@
+name: Build Android App Bundle (Play Store)
+
+# Builds the .aab Google Play requires for store submissions — a separate artifact
+# from build-apk.yml's direct-install .apk, which stays the GitHub-Release channel.
+# Trigger by hand from the Actions tab when a new Play Store upload is needed.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free up disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Build AAB locally (uses GitHub's compute, not Expo's build queue)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          _JAVA_OPTIONS: -XX:MaxMetaspaceSize=1536m -Xmx3584m
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=1536m -Xmx3584m" -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2
+        run: eas build --local -p android --profile production --non-interactive --output "${{ github.workspace }}/tamron-app.aab"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tamron-app-aab
+          path: tamron-app.aab
+          retention-days: 90
