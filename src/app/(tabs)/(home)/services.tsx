@@ -26,7 +26,6 @@ export default function ServicesScreen() {
             <Tile
               key={service.id}
               icon={service.icon}
-              color={service.color}
               title={service.name}
               onPress={() => router.push({ pathname: '/request', params: { serviceId: service.id } })}
             />

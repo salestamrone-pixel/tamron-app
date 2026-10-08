@@ -180,10 +180,26 @@ export function ListItem({
   );
 }
 
-export function Tile({ icon, title, onPress, color }: { icon: IconName; title: string; onPress: () => void; color?: string }) {
+// Resolves to the filled glyph when one exists: reads bolder inside the small brand badge.
+function solidIcon(name: IconName): IconName {
+  const solid = name.replace(/-outline$/, '') as IconName;
+  return Ionicons.glyphMap[solid] !== undefined ? solid : name;
+}
+
+// Same badge language as the home screen's tiles (kingdom.tsx): black disc, gold ring,
+// gold glyph — kept independent of that file to avoid a circular import with kit.tsx.
+function BrandBadge({ icon, size }: { icon: IconName; size: number }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, styles.tile, color ? { backgroundColor: color + '17' } : null, pressed && styles.pressed]}>
-      <IconBubble icon={icon} color={color} size={50} solid />
+    <View style={[styles.brandBadge, { width: size, height: size, borderRadius: size / 2, borderWidth: Math.max(1.5, size * 0.03) }]}>
+      <Icon name={solidIcon(icon)} size={size * 0.46} color={palette.gold} />
+    </View>
+  );
+}
+
+export function Tile({ icon, title, onPress }: { icon: IconName; title: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, styles.tile, pressed && styles.pressed]}>
+      <BrandBadge icon={icon} size={50} />
       <Text style={styles.tileTitle}>{title}</Text>
     </Pressable>
   );
@@ -442,6 +458,7 @@ const styles = StyleSheet.create({
   listItem: { flexDirection: 'row-reverse', alignItems: 'center', gap: 14, paddingVertical: 14 },
   listText: { flex: 1, gap: 2 },
   iconBubble: { alignItems: 'center', justifyContent: 'center', backgroundColor: palette.tint },
+  brandBadge: { alignItems: 'center', justifyContent: 'center', backgroundColor: palette.ink, borderColor: palette.gold, boxShadow: '0 4px 10px rgba(0,0,0,0.18)' },
   itemTitle: { fontSize: 16, fontFamily: font.bold, color: palette.text, textAlign: 'right' },
   grid: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 12 },
   tile: { flexGrow: 1, flexBasis: '45%', alignItems: 'flex-end', gap: 16, minHeight: 124, justifyContent: 'space-between' },
