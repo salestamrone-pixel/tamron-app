@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { font, Icon, Logo } from '@/components/kit';
+import { font, Icon, Logo, palette } from '@/components/kit';
 import { MainMenu } from '@/components/kingdom';
 import { useAuth } from '@/context/AuthContext';
 import { openMenu } from '@/lib/menu-store';
@@ -21,15 +21,15 @@ export default function HomeScreen() {
       <StatusBar style="light" />
       <Image source={require('@/assets/images/home-bg.jpg')} style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} resizeMode="cover" />
       <LinearGradient
-        colors={['rgba(5,22,55,0.45)', 'rgba(5,22,55,0)', 'rgba(5,22,55,0.05)', 'rgba(5,22,55,0.45)']}
+        colors={['rgba(10,10,10,0.5)', 'rgba(10,10,10,0)', 'rgba(10,10,10,0.08)', 'rgba(10,10,10,0.5)']}
         locations={[0, 0.25, 0.6, 1]}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
-            <Pressable onPress={openMenu} hitSlop={10} style={({ pressed }) => [styles.logoButton, pressed && { opacity: 0.8 }]}>
-              <Logo size={46} />
+            <Pressable onPress={openMenu} hitSlop={10} style={({ pressed }) => pressed && { opacity: 0.8 }}>
+              <Logo size={54} />
             </Pressable>
             {firstName ? (
               <View style={styles.hello}>
@@ -41,7 +41,7 @@ export default function HomeScreen() {
           <MainMenu items={items} onOpenSection={(key) => router.push({ pathname: '/section', params: { key } } as never)} />
           <Pressable onPress={() => router.push('/services')} style={({ pressed }) => [styles.cta, pressed && { opacity: 0.7 }]}>
             <Text style={styles.ctaText}>اطلب عرض سعر</Text>
-            <Icon name="arrow-back" size={20} color="#fff" />
+            <Icon name="arrow-back" size={20} color={palette.goldLight} />
           </Pressable>
         </ScrollView>
       </SafeAreaView>
@@ -50,21 +50,10 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0B1B33' },
+  root: { flex: 1, backgroundColor: palette.ink },
   content: { padding: 18, gap: 16, paddingBottom: 28, width: '100%', maxWidth: 720, alignSelf: 'center' },
   header: { flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'space-between' },
-  logoButton: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.85)',
-    boxShadow: '0 6px 16px rgba(0,0,0,0.35)',
-  },
-  hello: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: 'rgba(11,27,51,0.45)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.6)' },
+  hello: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: 'rgba(10,10,10,0.55)', borderWidth: 1, borderColor: 'rgba(204,167,65,0.6)' },
   helloText: { color: '#fff', fontSize: 13, fontFamily: font.bold },
   spacer: { height: 220 },
   cta: {
@@ -74,9 +63,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 54,
     borderRadius: 999,
-    backgroundColor: 'rgba(11,27,51,0.45)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: 'rgba(10,10,10,0.55)',
+    borderWidth: 1.5,
+    borderColor: palette.gold,
   },
-  ctaText: { color: '#fff', fontSize: 16, fontFamily: font.bold, flexShrink: 0 },
+  ctaText: { color: palette.goldLight, fontSize: 16, fontFamily: font.bold, flexShrink: 0 },
 });

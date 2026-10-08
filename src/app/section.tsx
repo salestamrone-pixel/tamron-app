@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 
+import { palette } from '@/components/kit';
 import { SubGrid } from '@/components/kingdom';
 import { useMenuItems } from '@/lib/use-menu-items';
 
@@ -14,13 +15,13 @@ export default function SectionScreen() {
     <View style={styles.root}>
       <Stack.Screen options={{ title: item?.label ?? '' }} />
       <Image source={require('@/assets/images/home-bg.jpg')} style={[StyleSheet.absoluteFill, { width: '100%', height: '100%' }]} resizeMode="cover" />
-      <LinearGradient colors={['rgba(5,22,55,0.35)', 'rgba(5,22,55,0.1)', 'rgba(5,22,55,0.45)']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['rgba(10,10,10,0.4)', 'rgba(10,10,10,0.12)', 'rgba(10,10,10,0.5)']} style={StyleSheet.absoluteFill} />
       <ScrollView contentContainerStyle={styles.content}>{item ? <SubGrid subs={item.subs} /> : null}</ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0B1B33' },
+  root: { flex: 1, backgroundColor: palette.ink },
   content: { padding: 18, paddingBottom: 40, width: '100%', maxWidth: 720, alignSelf: 'center' },
 });
