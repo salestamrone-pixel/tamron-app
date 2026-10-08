@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Needed to publish a GitHub Release with the APK attached.
+    permissions:
+      contents: write
     steps:
       # The runner ships with ~70GB of preinstalled tooling we never use (.NET, Haskell,
       # Docker images, extra Android emulator images...). The Android build plus EAS's own
@@ -89,3 +92,14 @@ jobs:
           name: tamron-app-apk
           path: tamron-app.apk
           retention-days: 30
+
+      # The Actions artifact above needs a GitHub login and downloads as a .zip, which
+      # is awkward on a phone. A Release gives a plain, public, one-tap link straight to
+      # the .apk file instead.
+      - name: Publish a GitHub Release with the APK attached
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: "تامرون - نسخة ${{ github.run_number }}"
+          files: tamron-app.apk
+          make_latest: true
