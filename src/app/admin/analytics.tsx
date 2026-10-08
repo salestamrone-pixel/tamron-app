@@ -1,13 +1,14 @@
 import { Stack } from 'expo-router';
-import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { collection, onSnapshot, orderBy, query, Timestamp, where, doc } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Badge, Card, Empty, font, Loading, Muted, palette, Screen, Section, Title } from '@/components/kit';
+import { Badge, Button, Card, Empty, font, Loading, Muted, palette, Screen, Section, Title } from '@/components/kit';
 import { formatDate } from '@/components/quote-card';
 import { StaffGate } from '@/components/staff-gate';
 import { db } from '@/config/firebase';
-import { UserRecord } from '@/types';
+import { shareAsCsv } from '@/lib/export-csv';
+import { QuoteRequest, UserRecord } from '@/types';
 
 const REPO = 'salestamrone-pixel/tamron-app';
 
@@ -57,10 +58,91 @@ function Stat({ label, value }: { label: string; value: number | string }) {
   );
 }
 
+function useRequestsTrend() {
+  const [counts, setCounts] = useState<{ label: string; count: number }[] | null>(null);
+
+  useEffect(() => {
+    const since = new Date();
+    since.setDate(since.getDate() - 6);
+    since.setHours(0, 0, 0, 0);
+    const q = query(collection(db, 'quoteRequests'), where('createdAt', '>=', Timestamp.fromDate(since)));
+    return onSnapshot(
+      q,
+      (snap) => {
+        const buckets = new Map<string, number>();
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(since);
+          d.setDate(since.getDate() + i);
+          buckets.set(d.toDateString(), 0);
+        }
+        snap.docs.forEach((d) => {
+          const createdAt = (d.data() as QuoteRequest).createdAt;
+          if (!createdAt) return;
+          const key = createdAt.toDate().toDateString();
+          if (buckets.has(key)) buckets.set(key, (buckets.get(key) ?? 0) + 1);
+        });
+        setCounts(
+          Array.from(buckets.entries()).map(([key, count]) => ({
+            label: new Date(key).toLocaleDateString('ar', { weekday: 'short' }),
+            count,
+          })),
+        );
+      },
+      () => setCounts([]),
+    );
+  }, []);
+
+  return counts;
+}
+
+function RequestsChart({ data }: { data: { label: string; count: number }[] }) {
+  const max = Math.max(1, ...data.map((d) => d.count));
+  return (
+    <Card style={styles.chartCard}>
+      <View style={styles.chartRow}>
+        {data.map((d) => (
+          <View key={d.label} style={styles.chartCol}>
+            <Text style={styles.chartCount}>{d.count}</Text>
+            <View style={[styles.chartBar, { height: Math.max(4, (d.count / max) * 80) }]} />
+            <Text style={styles.chartLabel}>{d.label}</Text>
+          </View>
+        ))}
+      </View>
+    </Card>
+  );
+}
+
 function AnalyticsBody() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [users, setUsers] = useState<UserRecord[] | null>(null);
+  const [exporting, setExporting] = useState(false);
   const downloads = useDownloadCount();
+  const trend = useRequestsTrend();
+
+  const exportCsv = async () => {
+    if (!users) return;
+    setExporting(true);
+    try {
+      await shareAsCsv(
+        'مستخدمو-تامرون.csv',
+        ['الاسم', 'البريد', 'الجوال', 'الدور', 'النظام', 'الجهاز', 'أول دخول', 'آخر دخول'],
+        users.map((u) => [
+          u.name,
+          u.email,
+          u.phone ?? '',
+          ROLE_LABELS[u.role]?.label ?? u.role,
+          u.platform,
+          u.deviceModel ?? '',
+          formatDate(u.createdAt, true),
+          formatDate(u.lastLoginAt, true),
+        ]),
+      );
+    } catch {
+      // Sharing can be cancelled by the user; nothing to report.
+    } finally {
+      setExporting(false);
+    }
+  };
 
   useEffect(() => {
     return onSnapshot(doc(db, 'analytics', 'summary'), (snap) => {
@@ -88,7 +170,13 @@ function AnalyticsBody() {
       </View>
       <Muted>عدد مرات التحميل مأخوذ من GitHub Releases، وهو مصدر توزيع التطبيق الحالي قبل النشر على Google Play.</Muted>
 
+      <Section>طلبات عروض الأسعار - آخر 7 أيام</Section>
+      {trend === null ? <Loading /> : <RequestsChart data={trend} />}
+
       <Section>من سجّل الدخول ({users?.length ?? 0})</Section>
+      {users && users.length > 0 ? (
+        <Button label="تصدير CSV" icon="download-outline" variant="outline" onPress={exportCsv} loading={exporting} />
+      ) : null}
       {users === null ? (
         <Loading />
       ) : users.length === 0 ? (
@@ -103,6 +191,7 @@ function AnalyticsBody() {
                 <Title>{u.name || 'بدون اسم'}</Title>
               </View>
               <Muted>{u.email}</Muted>
+              {u.phone ? <Muted>{u.phone}</Muted> : null}
               <View style={styles.metaRow}>
                 <Text style={styles.meta}>{u.platform === 'android' ? 'أندرويد' : u.platform === 'ios' ? 'آيفون' : u.platform}</Text>
                 {u.deviceModel ? <Text style={styles.meta}>· {u.deviceModel}</Text> : null}
@@ -140,4 +229,10 @@ const styles = StyleSheet.create({
   userHead: { flexDirection: 'row-reverse', alignItems: 'center', gap: 8 },
   metaRow: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: 4 },
   meta: { fontSize: 12, fontFamily: font.medium, color: palette.muted },
+  chartCard: { paddingVertical: 20 },
+  chartRow: { flexDirection: 'row-reverse', alignItems: 'flex-end', justifyContent: 'space-between', height: 120 },
+  chartCol: { alignItems: 'center', gap: 6, flex: 1 },
+  chartCount: { fontSize: 11, fontFamily: font.bold, color: palette.muted },
+  chartBar: { width: 18, borderRadius: 6, backgroundColor: palette.gold },
+  chartLabel: { fontSize: 11, fontFamily: font.medium, color: palette.muted },
 });

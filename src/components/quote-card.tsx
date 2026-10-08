@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Badge, Card, font, Muted, P, palette, Title } from '@/components/kit';
 import { STATUS_LABELS } from '@/constants/services';
@@ -43,6 +43,15 @@ export function QuoteCard({ quote, children }: { quote: QuoteRequest; children?:
       {quote.dimensions ? <Muted>المقاسات: {quote.dimensions}</Muted> : null}
       {quote.quantity ? <Muted>الكمية: {quote.quantity}</Muted> : null}
       {quote.location ? <Muted>الموقع: {quote.location}</Muted> : null}
+      {quote.attachments && quote.attachments.length > 0 ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.attachments}>
+          {quote.attachments.map((url) => (
+            <Pressable key={url} onPress={() => Linking.openURL(url)}>
+              <Image source={{ uri: url }} style={styles.attachmentThumb} />
+            </Pressable>
+          ))}
+        </ScrollView>
+      ) : null}
       <Muted>{formatDate(quote.createdAt)}</Muted>
       {quote.reply ? (
         <View style={styles.reply}>
@@ -63,4 +72,6 @@ const styles = StyleSheet.create({
   barOn: { backgroundColor: palette.gold },
   stepLabel: { fontSize: 10, fontFamily: font.medium, color: palette.muted, textAlign: 'center' },
   reply: { backgroundColor: palette.tint, borderRadius: 12, padding: 12, gap: 4, marginTop: 6 },
+  attachments: { flexDirection: 'row-reverse' },
+  attachmentThumb: { width: 64, height: 64, borderRadius: 10, marginStart: 8, backgroundColor: palette.surface },
 });

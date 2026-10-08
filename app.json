@@ -67,6 +67,13 @@
           "icon": "./assets/images/android-icon-foreground.png",
           "color": "#CCA741"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "يستخدم تامرون صور معرضك لإرفاقها بطلب عرض السعر كمرجع للتصميم.",
+          "cameraPermission": "يستخدم تامرون الكاميرا لتصوير موقع التركيب أو المرجع المطلوب وإرفاقه بطلب عرض السعر."
+        }
       ]
     ],
     "experiments": {

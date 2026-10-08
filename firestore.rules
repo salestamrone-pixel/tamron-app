@@ -78,6 +78,18 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Customer-facing testimonials shown on the "about" page; admin-curated.
+    match /testimonials/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admin composes a message here; the Cloud Function that fans it out through
+    // Expo push reads it with the Admin SDK, bypassing these rules.
+    match /broadcasts/{id} {
+      allow read, create: if isAdmin();
+    }
+
     match /portfolio/{id} {
       allow read: if true;
       allow write: if isAdmin();

@@ -111,6 +111,8 @@ export default function AdminHome() {
                 <Tile icon="navigate-circle-outline" title="مواقع العمل" onPress={go('/admin/sites')} />
                 <Tile icon="shield-checkmark-outline" title="سجل العمليات" onPress={go('/admin/audit')} />
                 <Tile icon="analytics-outline" title="الزوار والمستخدمون" onPress={go('/admin/analytics')} />
+                <Tile icon="chatbox-ellipses-outline" title="آراء العملاء" onPress={go('/admin/testimonials')} />
+                <Tile icon="megaphone-outline" title="إشعار للعملاء" onPress={go('/admin/broadcast')} />
               </Grid>
             </>
           ) : null}

@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
-import { collection, deleteDoc, getDocs, query, where } from 'firebase/firestore';
-import { useState } from 'react';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
 import { Button, Card, Dialog, Empty, ErrorText, Field, ListItem, Loading, Muted, P, palette, Screen, Title } from '@/components/kit';
 import { auth, db } from '@/config/firebase';
@@ -15,6 +15,16 @@ export default function ProfileScreen() {
   const [password, setPassword] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [phone, setPhone] = useState('');
+  const [savingPhone, setSavingPhone] = useState(false);
+  const [phoneSaved, setPhoneSaved] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    getDoc(doc(db, 'users', user.uid))
+      .then((snap) => setPhone(snap.data()?.phone ?? ''))
+      .catch(() => {});
+  }, [user]);
 
   if (loading) return <Loading />;
 
@@ -28,6 +38,19 @@ export default function ProfileScreen() {
   }
 
   const usesPassword = auth.currentUser?.providerData.some((p) => p.providerId === 'password') ?? true;
+
+  const savePhone = async () => {
+    setSavingPhone(true);
+    setPhoneSaved(false);
+    try {
+      await setDoc(doc(db, 'users', user.uid), { phone: phone.trim() }, { merge: true });
+      setPhoneSaved(true);
+    } catch {
+      // Not critical: the request form still lets the customer type it manually.
+    } finally {
+      setSavingPhone(false);
+    }
+  };
 
   const removeAccount = async () => {
     const current = auth.currentUser;
@@ -59,6 +82,13 @@ export default function ProfileScreen() {
         {staff ? <Muted>{staff.jobTitle || 'موظف'} · {isAdmin ? 'مدير النظام' : 'موظف'}</Muted> : null}
         {!staff && staffStatus ? <Muted>{staffStatus}</Muted> : null}
         {!staff && staffStatus ? <Button label="إعادة فحص حسابي" variant="outline" onPress={refresh} /> : null}
+      </Card>
+
+      <Card>
+        <Title>رقم الجوال</Title>
+        <Muted>يُستخدم لتعبئته تلقائياً في طلبات عرض السعر.</Muted>
+        <Field label="رقم الجوال" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={{ textAlign: 'left' }} />
+        <Button label={phoneSaved ? 'تم الحفظ' : 'حفظ'} icon="checkmark-outline" onPress={savePhone} loading={savingPhone} />
       </Card>
 
       {isStaff ? (

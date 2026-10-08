@@ -1,10 +1,23 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button, Card, Icon, IconName, Logo, Muted, P, palette, Screen, Section, Title, font } from '@/components/kit';
+import { db } from '@/config/firebase';
 import { downloadCompanyProfile } from '@/lib/profile-doc';
+import { Testimonial } from '@/types';
+
+function Stars({ value }: { value: number }) {
+  return (
+    <View style={{ flexDirection: 'row-reverse', gap: 2 }}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Icon key={n} name={n <= value ? 'star' : 'star-outline'} size={14} color={palette.gold} />
+      ))}
+    </View>
+  );
+}
 
 const VALUES: { title: string; text: string }[] = [
   { title: 'الجودة', text: 'نلتزم بتقديم أعمال عالية الجودة وفق أفضل المعايير.' },
@@ -55,6 +68,12 @@ function ContactRow({ icon, label, onPress }: { icon: IconName; label: string; o
 export default function AboutScreen() {
   const router = useRouter();
   const [downloading, setDownloading] = useState(false);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    const q = query(collection(db, 'testimonials'), orderBy('createdAt', 'desc'));
+    return onSnapshot(q, (snap) => setTestimonials(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Testimonial, 'id'>) }))), () => {});
+  }, []);
 
   const download = async () => {
     setDownloading(true);
@@ -148,6 +167,20 @@ export default function AboutScreen() {
             </Card>
           ))}
         </View>
+
+        {testimonials.length > 0 ? (
+          <>
+            <Section>آراء عملائنا</Section>
+            {testimonials.map((t) => (
+              <Card key={t.id} style={{ gap: 6 }}>
+                <Stars value={t.rating} />
+                <P>{t.text}</P>
+                <Text style={styles.valueTitle}>{t.name}</Text>
+                {t.role ? <Muted>{t.role}</Muted> : null}
+              </Card>
+            ))}
+          </>
+        ) : null}
 
         <Section>تواصل معنا</Section>
         <Card>

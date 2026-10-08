@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Reference images/files a customer attaches to a quote request. Not sensitive
+    // (design refs, site photos), so any signed-in account may view one, but only
+    // its owner may upload into their own folder.
+    match /quoteAttachments/{uid}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

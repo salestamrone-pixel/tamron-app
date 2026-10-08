@@ -77,6 +77,7 @@ export interface QuoteRequest {
   location: string;
   status: QuoteStatus;
   reply?: QuoteReply;
+  attachments?: string[];
   createdAt: Timestamp | null;
 }
 
@@ -116,6 +117,7 @@ export interface UserRecord {
   id: string;
   email: string;
   name: string;
+  phone?: string;
   emailVerified: boolean;
   role: string;
   platform: string;
@@ -123,6 +125,15 @@ export interface UserRecord {
   appBuild: number | null;
   createdAt: Timestamp | null;
   lastLoginAt: Timestamp | null;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  text: string;
+  rating: number;
+  createdAt: Timestamp | null;
 }
 
 export interface WorkSite {
